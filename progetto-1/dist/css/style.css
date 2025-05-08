@@ -1,6 +1,23 @@
 html,
 body {
   font-size: 20px;
+  padding-bottom: 2000px;
+  color: green;
+}
+
+h1 {
+  font-size: 100px;
+  color: brown;
+}
+
+table {
+  font-size: 28px;
+  border-collapse: collapse;
+  color: blueviolet;
+}
+table tr td,
+table tr th {
+  border: 1px solid gray;
 }
 
 /*# sourceMappingURL=style.css.map */
