@@ -1,0 +1,30 @@
+html,
+body{
+    font-size: 25px;
+    color:darkred;
+    background-color: peru;
+}
+
+table {
+    font-size: 28px;
+    border-collapse: collapse;
+    color: green;
+    img {
+        width: 80px;
+        height: auto;
+    }
+    tr {
+        td,
+        th {
+            border: 3px solid blue;;
+        }
+    }
+}
+
+
+footer {
+    background-color: #333;
+    color: white;
+    bottom: 0;
+}
+

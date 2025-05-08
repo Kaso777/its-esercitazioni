@@ -1,0 +1,28 @@
+html,
+body {
+  font-size: 25px;
+  color: darkred;
+  background-color: peru;
+}
+
+table {
+  font-size: 28px;
+  border-collapse: collapse;
+  color: green;
+}
+table img {
+  width: 80px;
+  height: auto;
+}
+table tr td,
+table tr th {
+  border: 3px solid blue;
+}
+
+footer {
+  background-color: #333;
+  color: white;
+  bottom: 0;
+}
+
+/*# sourceMappingURL=style.css.map */
