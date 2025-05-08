@@ -1,0 +1,20 @@
+{
+  "name": "progetto-1",
+  "version": "1.0.0",
+  "description": "A frontend environment for testing.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sass-build": "sass src/scss/style.scss:dist/css/style.css",
+    "sass-watch": "sass src/scss/style.scss:dist/css/style.css --watch",
+    "serve": "live-server --browser=firefox",
+    "dev": "concurrently --names \"SASS,SERVE\" --prefix \"[{name}]\" \"npm run sass-watch\" \"npm run serve\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "live-server": "^1.2.2",
+    "sass": "^1.87.0"
+  }
+}
