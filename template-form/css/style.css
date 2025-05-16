@@ -1,0 +1,27 @@
+html,
+body {
+    margin:0;
+    padding:0;
+}
+
+.main-content {
+    padding: 20px;
+}
+
+h1 {
+    font-family: sans-serif;
+}
+
+input[type=text],
+textarea,
+input[type=submit]{
+    border: 1px solid gray;
+    border-radius: 5px;
+    padding: 3px;
+}
+
+input[type=submit] {
+    background-color: #7777FF;
+    color: #fff;
+    font-weight: bold;
+}

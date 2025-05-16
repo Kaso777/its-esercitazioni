@@ -1,0 +1,26 @@
+{
+  "name": "2025-05-13-full-stack",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "serve": "live-server frontend --watch",
+    "sass": "sass frontend/styles/main.scss:frontend/dist/main.css --watch",
+    "frontend": "concurrently --names \"SASS,SERVE\" \"npm run sass\" \"npm run serve\"",
+    "backend": "nodemon backend/index.js",
+    "start": "concurrently --names \"BACKEND,FRONTEND\" \"npm run backend\" \"npm run frontend\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bootstrap": "^5.3.6",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "live-server": "^1.2.2",
+    "nodemon": "^3.1.10",
+    "sass": "^1.88.0"
+  }
+}
