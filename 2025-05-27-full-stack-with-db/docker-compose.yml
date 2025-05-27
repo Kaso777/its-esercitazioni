@@ -1,0 +1,16 @@
+services: # Dentro Services dichiaro i container che mi servono
+  mysql: # Qui faccio un container per MySQL
+    image: mysql:8.4 # Specifico l'immagine da usare
+    ports: # Mappo le porte del container a quelle dell'host
+      - "3306:3306" 
+    environment: # Variabili d'ambiente per configurare MySQL
+      MYSQL_ROOT_PASSWORD: rootpass 
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypass
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:
+  
