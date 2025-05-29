@@ -1,0 +1,15 @@
+User Experience:
+L'utente entra sulla pagina e trova:
+- un campo di testo
+- un tasto submit
+
+Scrivendo nel campo di testo e inviando il form, viene salvata una nota in database.
+
+Una lista di tutte le note si refresha ad ogni inserimento.
+
+Le note nella lista hanno una checkbox che può essere spuntata (di default le noto sono uncecked).
+Ceckando o unceckando una nota, il suo stato viene salvato in DB.
+
+Suggerimento: ricordate di rifare il seed creando una tabella adatta al nuovo scopo.
+
+BONUS: possibilità di cancellare le note.
