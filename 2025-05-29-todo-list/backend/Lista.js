@@ -1,11 +1,14 @@
 // Classe lista che contiene gli oggetti note
 class Lista {
-    constructor(){
+    constructor() {
         this.notes = [];
     }
 
-    addNote() {
+    addNote() { // Aggiunge una nota alla lista
+
         
     }
     
 }
+
+// Classe che al momento non si utilizza

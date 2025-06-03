@@ -1,3 +1,4 @@
+
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
@@ -8,10 +9,10 @@ app.use(cors());
 
 // Connect to MySQL
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'myuser',
-    password: 'mypass',
-    database: 'mydb',
+    host: 'localhost',      // Il server MySQL è sulla tua macchina
+    user: 'myuser',        // Username per accedere al database
+    password: 'mypass',    // Password per accedere al database
+    database: 'mydb'       // Nome del database che vuoi usare
 });
 
 // Test connection
@@ -23,30 +24,33 @@ db.connect((err) => {
     }
 });
 
+// Api Endpoints
 app.get('/api/notes', (req, res) => {
-    const query = 'SELECT * FROM notes';
-    db.query(query, (err, results) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ error: 'Errore DB' });
+    const query = 'SELECT * FROM notes';  // Prende TUTTE le note dal database
+    db.query(query, (err, results) => {   // Esegue la query
+        if (err) {                        // Se c'è un errore
+            console.error(err);           // Lo mostra nella console
+            return res.status(500).json({ error: 'Errore DB' }); // Manda errore al client
         }
-        res.json(results);
+        res.json(results);               // Altrimenti manda i risultati al client
     });
 });
-
-
 
 app.post('/api/notes/add', (req, res) => {
-    const note = req.body.note;
-    const status = req.body.status || false;
-    const insertQuery = `INSERT INTO notes (note, status) VALUES (${note}, ${status})`;
-    db.query(listQuery, (err, results) => {
-        if (err) return res.status(500).send(err);
-        res.json(results);
+    const note = req.body.note;           // Prende il testo della nota dalla richiesta
+    const status = req.body.status || false;  // Prende lo status (se non c'è usa false)
+    
+    // Usa ? come placeholder per prevenire SQL injection
+    const insertQuery = 'INSERT INTO notes (note, status) VALUES (?, ?)';
+    
+    // Passa i valori separatamente come array
+    db.query(insertQuery, [note, status], (err, results) => {
+        if (err) return res.status(500).send(err);  // Se c'è errore, lo manda al client
+        res.json(results);                          // Altrimenti manda il risultato
     });
 });
 
-
+// Avvia il server. Il server inizia ad ascoltare sulla porta 3000 le richieste HTTP
 app.listen(3000, () => console.log('Server listening on http://localhost:3000'));
 
 console.log("Funziona");

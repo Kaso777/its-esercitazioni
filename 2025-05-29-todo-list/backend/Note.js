@@ -17,3 +17,5 @@ class Note {
         return this.status;
     }
 }
+
+// Classe che al momento non si utilizza
