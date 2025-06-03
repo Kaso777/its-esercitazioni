@@ -63,7 +63,7 @@ function renderNotes(notes) {
         checkbox.checked = note.status;  // Imposta lo stato della checkbox
 
 
-        // Listener per aggiornare lo stato nel DB
+        // Listener per aggiornare lo stato della nota nel DB 
         checkbox.addEventListener('change', async () => {
             try {
                 await apiRequest(
@@ -77,11 +77,6 @@ function renderNotes(notes) {
             }
         });
 
-
-
-
-
-
         const label = document.createElement('span'); // Crea un'etichetta per la checkbox
         label.textContent = note.note;  // Imposta il testo della nota
 
@@ -91,6 +86,25 @@ function renderNotes(notes) {
         noteListDiv.appendChild(div);
     });
 }
+
+// Script per eliminare le note completate
+const deleteCompletedButton = document.querySelector('#deleteCompleted'); // Seleziona il pulsante con id "deleteCompleted" dalla pagina HTML
+deleteCompletedButton.addEventListener('click', async () => {
+    // Aggiunge un event listener al pulsante che ascolta il click
+    // La funzione collegata è asincrona perché utilizza `await`
+    try {
+        // Chiede al server di eliminare le note completate
+        await apiRequest('http://localhost:3000/api/notes/completed', 'DELETE');
+        // Esegue una richiesta HTTP DELETE verso l'endpoint /api/notes/completed
+        loadNotes();  // Se la richiesta va a buon fine ricarica la lista delle note
+    } catch {
+        // Se qualcosa va storto durante la richiesta (es. errore di rete, risposta 500...)
+        alert('Errore nell\'eliminazione delle note completate.');
+        // Mostra un messaggio d’errore all’utente
+    }
+});
+
+
 
 // Funzione che carica le note dal server
 async function loadNotes() {

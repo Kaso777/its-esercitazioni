@@ -1,8 +1,10 @@
 html,
 body {
-  color: rgb(50, 41, 131);
-  background-color: #616962;
-  font-family: Arial, sans-serif;
+  color: rgb(87, 71, 231);
+  background-color: rgba(37, 39, 37, 0.0745098039);
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: center;
+  font-size: 25px;
 }
 
 /*# sourceMappingURL=main.css.map */

@@ -51,6 +51,27 @@ app.post('/api/notes/add', (req, res) => {
     });
 });
 
+/*
+// Elimina una nota dal database
+app.delete('/api/notes/:id', (req, res) => {
+    const id =req.params.id;  // Prende l'ID della nota dalla richiesta
+    db.query('DELETE FROM notes WHERE id = ?', [id], (err, result) => { // Uso l'ID come parametro per prevenire SQL injection
+            if (err) return res.status(500).json({ error: 'Errore DB' });
+            res.json({ success: true });  // Manda una risposta di successo
+        }
+    );
+}
+);
+*/
+
+// Elimina tutte le note completate dal database
+app.delete('/api/notes/completed', (req, res) => { // Endpoint per eliminare tutte le note completate
+    db.query('DELETE FROM notes WHERE status = true', (err, result) => { // Elimina le note con status true
+        if (err) return res.status(500).json({ error: 'Errore DB' });
+        res.json({ success: true });
+    });
+});
+
 // Aggiorna lo stato della nota nel database
 app.put('/api/notes/:id', (req, res) => {
     const id = req.params.id;
