@@ -36,6 +36,7 @@ app.get('/api/notes', (req, res) => {
     });
 });
 
+// Aggiunge una nuova nota al database
 app.post('/api/notes/add', (req, res) => {
     const note = req.body.note;           // Prende il testo della nota dalla richiesta
     const status = req.body.status || false;  // Prende lo status (se non c'è usa false)
@@ -48,6 +49,20 @@ app.post('/api/notes/add', (req, res) => {
         if (err) return res.status(500).send(err);  // Se c'è errore, lo manda al client
         res.json(results);                          // Altrimenti manda il risultato
     });
+});
+
+// Aggiorna lo stato della nota nel database
+app.put('/api/notes/:id', (req, res) => {
+    const id = req.params.id;
+    const { status } = req.body;
+    db.query(
+        'UPDATE notes SET status = ? WHERE id = ?',
+        [status, id],
+        (err, result) => {
+            if (err) return res.status(500).json({ error: 'Errore DB' });
+            res.json({ success: true });
+        }
+    );
 });
 
 // Avvia il server. Il server inizia ad ascoltare sulla porta 3000 le richieste HTTP

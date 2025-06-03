@@ -57,9 +57,38 @@ function renderNotes(notes) {
 
     // Per ogni nota, crea un paragrafo e lo aggiunge alla pagina
     notes.forEach(note => {
-        const p = document.createElement('p');
-        p.textContent = note.note;
-        noteListDiv.appendChild(p);
+        const div = document.createElement('div');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = note.status;  // Imposta lo stato della checkbox
+
+
+        // Listener per aggiornare lo stato nel DB
+        checkbox.addEventListener('change', async () => {
+            try {
+                await apiRequest(
+                    `http://localhost:3000/api/notes/${note.id}`,
+                    'PUT',
+                    { status: checkbox.checked }
+                );
+            } catch {
+                alert('Errore nell\'aggiornamento dello stato.');
+                checkbox.checked = !checkbox.checked; // Ripristina stato se errore
+            }
+        });
+
+
+
+
+
+
+        const label = document.createElement('span'); // Crea un'etichetta per la checkbox
+        label.textContent = note.note;  // Imposta il testo della nota
+
+        div.appendChild(checkbox);  // Aggiunge la checkbox al div
+        div.appendChild(label);      // Aggiunge l'etichetta al div
+
+        noteListDiv.appendChild(div);
     });
 }
 
