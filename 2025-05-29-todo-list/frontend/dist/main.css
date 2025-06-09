@@ -46,6 +46,8 @@ button:hover {
   background-color: #ebe96f;
   color: rgb(190, 35, 35);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  list-style: none;
+  text-align: left;
 }
 
 input[type=checkbox] {
@@ -55,7 +57,6 @@ input[type=checkbox] {
   cursor: pointer;
   margin: 10px;
   transform: scale(1.2);
-  align-items: center;
 }
 
 /*# sourceMappingURL=main.css.map */

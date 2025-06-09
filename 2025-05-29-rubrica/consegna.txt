@@ -1,0 +1,19 @@
+- formattare dati dei contatti sulla pagina html
+tabella con td tr per ogni contatto
+
+chiamare un'API che mi scrive e non solo che legge
+- campo di testo con tasto accanto
+
+
+catch del rilascio del tasto, il controllo dei 3 caratteri minimi, il timeout per non fare partire mille ricerche ogni volta che lascio un tasto.
+
+
+
+
+id univoco checked testo,
+user experience l'utente può fare check e inserire
+evento per il check
+con invio/submit aggiunge la nota nel database nella lista voglio una check box per ogni 
+
+input di testo con submit
+nella nota 

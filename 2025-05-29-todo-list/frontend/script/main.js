@@ -55,9 +55,12 @@ function renderNotes(notes) {
         return;
     }
 
+     // Crea un ul per contenere tutti i li
+    const ul = document.createElement('ul');
+
     // Per ogni nota, crea un paragrafo e lo aggiunge alla pagina
     notes.forEach(note => {
-        const div = document.createElement('div');
+        const li = document.createElement('li');
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.checked = note.status;  // Imposta lo stato della checkbox
@@ -80,10 +83,10 @@ function renderNotes(notes) {
         const label = document.createElement('span'); // Crea un'etichetta per la checkbox
         label.textContent = note.note;  // Imposta il testo della nota
 
-        div.appendChild(checkbox);  // Aggiunge la checkbox al div
-        div.appendChild(label);      // Aggiunge l'etichetta al div
+        li.appendChild(checkbox);  // Aggiunge la checkbox al div
+        li.appendChild(label);      // Aggiunge l'etichetta al div
 
-        noteListDiv.appendChild(div);
+        noteListDiv.appendChild(li);
     });
 }
 
