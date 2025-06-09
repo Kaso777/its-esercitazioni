@@ -3,7 +3,7 @@ services: # Dentro Services dichiaro i container che mi servono
     image: mysql:8.4 # Specifico l'immagine da usare
     container_name: lista_db # Nome del container
     ports: # Mappo le porte del container a quelle dell'host
-      - "3306:3306" 
+      - "3306:3306"
     environment: # Variabili d'ambiente per configurare MySQL
       MYSQL_ROOT_PASSWORD: rootpass 
       MYSQL_DATABASE: mydb

@@ -1,8 +1,63 @@
-html,
+html, 
 body{
     color: rgb(87, 71, 231);
-    background-color: #25272513;
+    background-color: #aaa82513;
     font-family: Arial, Helvetica, sans-serif;
     text-align: center;
-    font-size: 25px ;
+    font-size: 20pt ;
 }
+
+
+input {
+    width: 50%;
+    height: 20px;
+    font-size: 20px;
+    padding: 22px;
+    border-radius: 160px;
+    border: 10px solid #4d943c;
+    background-color: #f08edb;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+
+
+button {
+    background-color: #5757e7;
+    color: white;
+    border: none;
+    padding: 10px 20px; // 10px top/bottom, 20px left/right
+    font-size: 20px;
+    border-radius: 150px;
+    border-bottom-right-radius: 22px;
+    border-top-left-radius: 22px;
+    margin: 5px;
+}
+
+button:hover {
+    background-color: #d6af30;
+}
+
+#noteListDiv {
+    padding: 5px;
+    border-radius: 10px;
+    background-color: #ebe96f;
+    color: rgb(190, 35, 35);
+    width: 60%; // oppure "400px" se vuoi una larghezza fissa
+    margin: 0 auto; // centra il div orizzontalmente
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #ebe96f;
+    color: rgb(190, 35, 35);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+
+}
+input[type="checkbox"] {
+    width: 25px;
+    height: 25px;
+    accent-color: #4d943c; // Colore della spunta (funziona nei browser moderni)
+    cursor: pointer;
+    margin: 10px;
+    transform: scale(1.2); // leggermente più grande
+    align-items: center;
+}
+
