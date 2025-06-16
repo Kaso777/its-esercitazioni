@@ -66,6 +66,56 @@ function renderNotes(notes) {
         checkbox.checked = note.status;  // Imposta lo stato della checkbox
 
 
+
+// Crea il bottone di modifica
+        const editButton = document.createElement('button');
+        editButton.textContent = '✏️';
+        editButton.className = 'edit-btn';
+        
+        editButton.addEventListener('click', async () => {
+            const newText = prompt('Modifica la nota:', note.note);
+            if (newText && newText !== note.note) {
+                try {
+                    await apiRequest(
+                        `http://localhost:3000/api/notes/${note.id}`,
+                        'PUT',
+                        { 
+                            note: newText,
+                            status: note.status 
+                        }
+                    );
+                    loadNotes();
+                } catch {
+                    alert('Errore nella modifica della nota.');
+                }
+            }
+        });
+
+
+
+
+
+
+
+        // Crea il bottone di cancellazione singola
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = '🗑️';
+        deleteButton.className = 'delete-btn';
+        
+        // Listener per la cancellazione singola
+        deleteButton.addEventListener('click', async () => {
+            try {
+                await apiRequest(
+                    `http://localhost:3000/api/notes/${note.id}`,
+                    'DELETE'
+                );
+                loadNotes(); // Ricarica la lista
+            } catch {
+                alert('Errore nella cancellazione della nota.');
+            }
+        });
+
+
         // Listener per aggiornare lo stato della nota nel DB 
         checkbox.addEventListener('change', async () => {
             try {
@@ -85,6 +135,8 @@ function renderNotes(notes) {
 
         li.appendChild(checkbox);  // Aggiunge la checkbox al div
         li.appendChild(label);      // Aggiunge l'etichetta al div
+        li.appendChild(editButton); // Aggiunge il pulsante di modifica ad ogni nota
+        li.appendChild(deleteButton); // Aggiunge il pulsante di eliminazione ad ogni nota
 
         noteListDiv.appendChild(li);
     });

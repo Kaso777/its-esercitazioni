@@ -15,7 +15,7 @@ const db = mysql.createConnection({
     database: 'mydb'       // Nome del database che vuoi usare
 });
 
-// Test connection
+// Test connection 
 db.connect((err) => {
     if (err) {
         console.error('MySQL connection error:', err);
@@ -24,7 +24,7 @@ db.connect((err) => {
     }
 });
 
-// Api Endpoints
+// Endpoint per ottenere tutte le note dal database
 app.get('/api/notes', (req, res) => {
     const query = 'SELECT * FROM notes';  // Prende TUTTE le note dal database
     db.query(query, (err, results) => {   // Esegue la query
@@ -51,22 +51,34 @@ app.post('/api/notes/add', (req, res) => {
     });
 });
 
-/*
-// Elimina una nota dal database
-app.delete('/api/notes/:id', (req, res) => {
-    const id =req.params.id;  // Prende l'ID della nota dalla richiesta
-    db.query('DELETE FROM notes WHERE id = ?', [id], (err, result) => { // Uso l'ID come parametro per prevenire SQL injection
-            if (err) return res.status(500).json({ error: 'Errore DB' });
-            res.json({ success: true });  // Manda una risposta di successo
-        }
-    );
-}
-);
-*/
+//Modifica una nota esistente nel database
+app.put('/api/notes/:id', (req, res) => {
+    const id = req.params.id;  // Prende l'id della nota dalla richiesta
+    const { note, status } = req.body;  // Prende il testo e lo status dalla richiesta
+    
+    // Usa ? come placeholder per prevenire SQL injection
+    const updateQuery = 'UPDATE notes SET note = ?, status = ? WHERE id = ?';
+    
+    // Passa i valori separatamente come array
+    db.query(updateQuery, [note, status, id], (err, results) => {
+        if (err) return res.status(500).send(err);  // Se c'è errore, lo manda al client
+        res.json(results);                          // Altrimenti manda il risultato
+    });
+});
 
 // Elimina tutte le note completate dal database
 app.delete('/api/notes/completed', (req, res) => { // Endpoint per eliminare tutte le note completate
     db.query('DELETE FROM notes WHERE status = true', (err, result) => { // Elimina le note con status true
+        if (err) return res.status(500).json({ error: 'Errore DB' });
+        res.json({ success: true });
+    });
+});
+
+
+// Elimina una nota specifica dal database
+app.delete('/api/notes/:id', (req, res) => {
+    const id = req.params.id;
+    db.query('DELETE FROM notes WHERE id = ?', [id], (err, result) => {
         if (err) return res.status(500).json({ error: 'Errore DB' });
         res.json({ success: true });
     });

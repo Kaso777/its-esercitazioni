@@ -62,3 +62,20 @@ input[type="checkbox"] {
     transform: scale(1.2); // leggermente più grande
 
 }
+
+.edit-btn,
+.delete-btn {
+    margin-left: 10px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 8px 8px;  //
+}
+
+.edit-btn:hover {
+    background-color: rgb(105, 105, 212)
+}
+
+.delete-btn:hover {
+    background-color: rgb(209, 53, 53)
+}
