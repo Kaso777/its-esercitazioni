@@ -1,11 +1,11 @@
 
-const express = require('express');
-const mysql = require('mysql2');
-const cors = require('cors');
+const express = require('express'); // Importa il framework Express per creare un server web
+const mysql = require('mysql2'); // Importa il modulo mysql2 per connettersi a un database MySQL
+const cors = require('cors'); // Importa il middleware CORS per gestire le richieste cross-origin
 
-const app = express();
-app.use(express.json());
-app.use(cors());
+const app = express(); // Crea un'applicazione Express
+app.use(express.json()); // Usa il middleware per parsare il corpo delle richieste in formato JSON
+app.use(cors()); // Usa il middleware CORS per permettere richieste da altri domini
 
 // Connect to MySQL
 const db = mysql.createConnection({
