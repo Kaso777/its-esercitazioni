@@ -9,7 +9,7 @@ body{
 
 
 input {
-    width: 50%;
+    width: 25%;
     height: 20px;
     font-size: 20px;
     padding: 22px;
@@ -42,7 +42,7 @@ button:hover {
     border-radius: 10px;
     background-color: #ebe96f;
     color: rgb(190, 35, 35);
-    width: 60%; // oppure "400px" se vuoi una larghezza fissa
+    width: 40%; // oppure "400px" se vuoi una larghezza fissa
     margin: 0 auto; // centra il div orizzontalmente
     padding: 20px;
     border-radius: 10px;
@@ -78,4 +78,46 @@ input[type="checkbox"] {
 
 .delete-btn:hover {
     background-color: rgb(209, 53, 53)
+}
+
+#listSelector {
+    font-size: 18px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 2px solid #4CAF50;
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#listSelector:hover {
+    background-color: #c8e6c9;
+}
+
+#newListForm {
+    margin-top: 1em;
+    display: flex;
+    gap: 0.5em;
+    margin:0 auto;
+}
+
+#newListForm input {
+    padding: 0.5em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin:0 auto;
+}
+
+#newListForm button {
+    padding: 0.5em 1em;
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#newListForm button:hover {
+    background-color: #45a049;
 }

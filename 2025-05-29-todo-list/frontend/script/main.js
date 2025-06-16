@@ -2,6 +2,27 @@
 // #messageForm    // Il form per l'input
 // #message        // L'input text
 
+const listSelector = document.querySelector('#listSelector');
+async function loadLists() {
+    try {
+        const lists = await apiRequest('http://localhost:3000/api/lists');
+        listSelector.innerHTML = ''; // Svuota il menu a tendina
+
+        lists.forEach(list => {
+            const option = document.createElement('option');
+            option.value = list.id;
+            option.textContent = list.name;
+            listSelector.appendChild(option);
+        });
+
+        // Dopo aver caricato le liste, carica anche le note della prima lista
+        loadNotes();
+    } catch (err) {
+        alert('Errore nel caricamento delle liste.');
+    }
+}
+
+
 
 // Funzione che gestisce tutte le chiamate API al backend
 // È asincrona perché deve attendere le risposte dal server
@@ -66,6 +87,7 @@ function renderNotes(notes) {
         checkbox.checked = note.status;  // Imposta lo stato della checkbox
 
 
+        
 
 // Crea il bottone di modifica
         const editButton = document.createElement('button');
@@ -90,12 +112,6 @@ function renderNotes(notes) {
                 }
             }
         });
-
-
-
-
-
-
 
         // Crea il bottone di cancellazione singola
         const deleteButton = document.createElement('button');
@@ -159,13 +175,33 @@ deleteCompletedButton.addEventListener('click', async () => {
     }
 });
 
+// Script per aggiungere una nuova lista
+const newListForm = document.querySelector('#newListForm');
+const newListNameInput = document.querySelector('#newListName');
+
+newListForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const name = newListNameInput.value.trim();
+    if (!name) return;
+
+    try {
+        await apiRequest('http://localhost:3000/api/lists/add', 'POST', { name });
+        newListNameInput.value = '';
+        loadLists(); // Ricarica il menu a tendina con le nuove liste
+    } catch {
+        alert('Errore nella creazione della lista.');
+    }
+});
+
+
 
 
 // Funzione che carica le note dal server
 async function loadNotes() {
     try {
-        // Chiede le note al server
-        const notes = await apiRequest('http://localhost:3000/api/notes');
+        const selectedListId = listSelector.value;
+        const notes = await apiRequest('http://localhost:3000/api/notes', 'GET', { list_id: selectedListId });
+
         // Le mostra nella pagina
         renderNotes(notes);
     } catch {
@@ -182,7 +218,8 @@ messageForm.addEventListener('submit', async (event) => {
 
     try {
         // Invia la nuova nota al server
-        await apiRequest('http://localhost:3000/api/notes/add', 'POST', { note: text });
+        await apiRequest('http://localhost:3000/api/notes/add', 'POST', { note: text, list_id: listSelector.value });
+
         messageInput.value = '';  // Svuota il campo input
         loadNotes();  // Ricarica la lista delle note
     } catch {
@@ -192,4 +229,8 @@ messageForm.addEventListener('submit', async (event) => {
 });
 
 // Quando la pagina si carica, mostra subito le note
-loadNotes();
+loadLists();
+// Carica le liste all'avvio
+listSelector.addEventListener('change', () => {
+    loadNotes();
+});

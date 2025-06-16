@@ -26,45 +26,88 @@ db.connect((err) => {
 
 // Endpoint per ottenere tutte le note dal database
 app.get('/api/notes', (req, res) => {
-    const query = 'SELECT * FROM notes';  // Prende TUTTE le note dal database
-    db.query(query, (err, results) => {   // Esegue la query
-        if (err) {                        // Se c'è un errore
-            console.error(err);           // Lo mostra nella console
-            return res.status(500).json({ error: 'Errore DB' }); // Manda errore al client
+    const listId = req.query.list_id;
+
+    if (!listId) {
+        return res.status(400).json({ error: 'Parametro list_id obbligatorio' });
+    }
+
+    const query = 'SELECT * FROM notes WHERE list_id = ?';
+    db.query(query, [listId], (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: 'Errore DB' });
         }
-        res.json(results);               // Altrimenti manda i risultati al client
+        res.json(results);
     });
 });
+
+// Endpoint per ottenere tutte le liste
+app.get('/api/lists', (req, res) => {
+    const query = 'SELECT * FROM lists';  // Prendi tutte le liste
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: 'Errore DB' });
+        }
+        res.json(results); // Manda le liste al frontend
+    });
+});
+
+
 
 // Aggiunge una nuova nota al database
 app.post('/api/notes/add', (req, res) => {
-    const note = req.body.note;           // Prende il testo della nota dalla richiesta
-    const status = req.body.status || false;  // Prende lo status (se non c'è usa false)
-    
-    // Usa ? come placeholder per prevenire SQL injection
-    const insertQuery = 'INSERT INTO notes (note, status) VALUES (?, ?)';
-    
-    // Passa i valori separatamente come array
-    db.query(insertQuery, [note, status], (err, results) => {
-        if (err) return res.status(500).send(err);  // Se c'è errore, lo manda al client
-        res.json(results);                          // Altrimenti manda il risultato
+    const { note, status = false, list_id } = req.body;
+
+    if (!note || !list_id) {
+        return res.status(400).json({ error: 'Nota e list_id sono obbligatori' });
+    }
+
+    const insertQuery = 'INSERT INTO notes (note, status, list_id) VALUES (?, ?, ?)';
+    db.query(insertQuery, [note, status, list_id], (err, results) => {
+        if (err) return res.status(500).json({ error: 'Errore DB' });
+        res.json(results);
     });
 });
 
-//Modifica una nota esistente nel database
-app.put('/api/notes/:id', (req, res) => {
-    const id = req.params.id;  // Prende l'id della nota dalla richiesta
-    const { note, status } = req.body;  // Prende il testo e lo status dalla richiesta
-    
-    // Usa ? come placeholder per prevenire SQL injection
-    const updateQuery = 'UPDATE notes SET note = ?, status = ? WHERE id = ?';
-    
-    // Passa i valori separatamente come array
-    db.query(updateQuery, [note, status, id], (err, results) => {
-        if (err) return res.status(500).send(err);  // Se c'è errore, lo manda al client
-        res.json(results);                          // Altrimenti manda il risultato
+// Aggiungi una nuova lista
+app.post('/api/lists/add', (req, res) => {
+    const { name } = req.body;
+    if (!name) return res.status(400).json({ error: 'Nome lista obbligatorio' });
+
+    db.query('INSERT INTO lists (name) VALUES (?)', [name], (err, results) => {
+        if (err) return res.status(500).json({ error: 'Errore DB' });
+        res.json(results);
     });
 });
+
+// Aggiorna una nota esistente nel database
+app.put('/api/notes/:id', (req, res) => {
+    const id = req.params.id;
+    const { note, status } = req.body;
+
+    let query, params;
+
+    if (note !== undefined && status !== undefined) {
+        query = 'UPDATE notes SET note = ?, status = ? WHERE id = ?';
+        params = [note, status, id];
+    } else if (note !== undefined) {
+        query = 'UPDATE notes SET note = ? WHERE id = ?';
+        params = [note, id];
+    } else if (status !== undefined) {
+        query = 'UPDATE notes SET status = ? WHERE id = ?';
+        params = [status, id];
+    } else {
+        return res.status(400).json({ error: 'Nessun campo da aggiornare' });
+    }
+
+    db.query(query, params, (err, results) => {
+        if (err) return res.status(500).json({ error: 'Errore DB' });
+        res.json({ success: true });
+    });
+});
+
 
 // Elimina tutte le note completate dal database
 app.delete('/api/notes/completed', (req, res) => { // Endpoint per eliminare tutte le note completate
@@ -84,19 +127,7 @@ app.delete('/api/notes/:id', (req, res) => {
     });
 });
 
-// Aggiorna lo stato della nota nel database
-app.put('/api/notes/:id', (req, res) => {
-    const id = req.params.id;
-    const { status } = req.body;
-    db.query(
-        'UPDATE notes SET status = ? WHERE id = ?',
-        [status, id],
-        (err, result) => {
-            if (err) return res.status(500).json({ error: 'Errore DB' });
-            res.json({ success: true });
-        }
-    );
-});
+
 
 // Avvia il server. Il server inizia ad ascoltare sulla porta 3000 le richieste HTTP
 app.listen(3000, () => console.log('Server listening on http://localhost:3000'));
