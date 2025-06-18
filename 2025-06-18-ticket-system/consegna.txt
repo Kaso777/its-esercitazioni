@@ -1,0 +1,26 @@
+Esercizio: Sistema base di invio ticket
+
+Obiettivo:
+Realizzare un piccolo sistema di invio ticket utilizzando:
+* Form HTML
+* PHP orientato agli oggetti (classi)
+* Validazione di base lato server
+
+Descrizione:
+L'utente deve poter compilare un form web con i seguenti campi:
+* Nome utente (campo di testo)
+* Categoria (menu a tendina con 3-5 categorie predefinite, es.: Bug, Richiesta, Supporto tecnico, Altro)
+* Descrizione del problema (textarea)
+
+Al submit del form :
+1️⃣ Il PHP deve leggere i dati inviati
+2️⃣ Creare un oggetto Ticket con questi dati
+3️⃣ Validare (tramite un metodo della classe Ticket) i dati (es.: il nome utente non deve essere vuoto, la descrizione deve avere almeno 10 caratteri)
+4️⃣ Se i dati sono validi, mostrare un messaggio di conferma con i dettagli del ticket
+5️⃣ Se i dati non sono validi, mostrare nuovamente il form con gli errori evidenziati
+
+Dati tecnici progetto:
+* Nella cartella del vostro repo GIT, create una sottocartella 2025-06-18-ticket-system ed entrateci.
+* Inizializzare un progetto npm con il necessario per un live server con sass.
+* Creare un docker-compose per configurare un'istanza di PHP.
+* Gestite il progetto in questa cartella e committate/pushate ogni tanto.
