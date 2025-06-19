@@ -69,14 +69,14 @@ const messageInput = document.querySelector('#message');       // Campo di input
 function renderNotes(notes) {
     // Svuota il div delle note
     noteListDiv.innerHTML = '';
-    
+
     // Se non ci sono note, mostra un messaggio
     if (notes.length === 0) {
         noteListDiv.textContent = 'Nessuna nota presente.';
         return;
     }
 
-     // Crea un ul per contenere tutti i li
+    // Crea un ul per contenere tutti i li
     const ul = document.createElement('ul');
 
     // Per ogni nota, crea un paragrafo e lo aggiunge alla pagina
@@ -87,49 +87,76 @@ function renderNotes(notes) {
         checkbox.checked = note.status;  // Imposta lo stato della checkbox
 
 
-        
 
-// Crea il bottone di modifica
+
+        // Crea il bottone di modifica
         const editButton = document.createElement('button');
         editButton.textContent = '✏️';
         editButton.className = 'edit-btn';
-        
-        editButton.addEventListener('click', async () => {
-            const newText = prompt('Modifica la nota:', note.note);
-            if (newText && newText !== note.note) {
-                try {
-                    await apiRequest(
-                        `http://localhost:3000/api/notes/${note.id}`,
-                        'PUT',
-                        { 
-                            note: newText,
-                            status: note.status 
-                        }
-                    );
-                    loadNotes();
-                } catch {
-                    alert('Errore nella modifica della nota.');
+
+        const editPopup = document.getElementById('editPopup');
+        const editInput = document.getElementById('editInput');
+        const editConfirm = document.getElementById('editConfirm');
+        const editCancel = document.getElementById('editCancel');
+
+        editButton.addEventListener('click', () => {
+            editInput.value = note.note;
+            editPopup.style.display = 'flex';
+
+            editConfirm.onclick = async () => {
+                const newText = editInput.value.trim();
+                if (newText && newText !== note.note) {
+                    try {
+                        await apiRequest(
+                            `http://localhost:3000/api/notes/${note.id}`,
+                            'PUT',
+                            {
+                                note: newText,
+                                status: note.status
+                            }
+                        );
+                        editPopup.style.display = 'none';
+                        loadNotes();
+                    } catch {
+                        alert('Errore nella modifica della nota.');
+                    }
+                } else {
+                    editPopup.style.display = 'none';
                 }
-            }
+            };
+
+            editCancel.onclick = () => {
+                editPopup.style.display = 'none';
+            };
         });
+
 
         // Crea il bottone di cancellazione singola
         const deleteButton = document.createElement('button');
         deleteButton.textContent = '🗑️';
         deleteButton.className = 'delete-btn';
-        
+
+        const confirmPopup = document.getElementById('confirmPopup');
+        const confirmYes = document.getElementById('confirmYes');
+        const confirmNo = document.getElementById('confirmNo');
+
         // Listener per la cancellazione singola
-        deleteButton.addEventListener('click', async () => {
-            try {
-                await apiRequest(
-                    `http://localhost:3000/api/notes/${note.id}`,
-                    'DELETE'
-                );
-                loadNotes(); // Ricarica la lista
-            } catch {
-                alert('Errore nella cancellazione della nota.');
-            }
+        deleteButton.addEventListener('click', () => {
+            confirmPopup.style.display = 'flex';
+            confirmYes.onclick = async () => {
+                confirmPopup.style.display = 'none';
+                try {
+                    await apiRequest(`http://localhost:3000/api/notes/${note.id}`, 'DELETE');
+                    loadNotes();
+                } catch {
+                    alert('Errore nella cancellazione della nota.');
+                }
+            };
+            confirmNo.onclick = () => {
+                confirmPopup.style.display = 'none';
+            };
         });
+
 
 
         // Listener per aggiornare lo stato della nota nel DB 

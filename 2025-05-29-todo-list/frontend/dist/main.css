@@ -1,129 +1,162 @@
-html,
+/* Reset base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: system-ui, sans-serif;
+}
+
+/* Corpo centrale */
 body {
-  color: rgb(87, 71, 231);
-  background-color: rgba(170, 168, 37, 0.0745098039);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Contenitore principale */
+.main-content {
+  width: 100%;
+  max-width: 500px;
+  padding: 20px;
   text-align: center;
-  font-size: 20pt;
 }
 
-input {
-  width: 30%;
-  height: 20px;
-  font-size: 20px;
-  padding: 22px;
-  border-radius: 160px;
-  border: 10px solid #4d943c;
-  background-color: #f08edb;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+/* Titolo */
+h1,
+h2 {
+  margin-bottom: 20px;
+  font-weight: 600;
 }
 
+/* Contenitore per select + bottoni lista */
+#listSelector, #listActions {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Distanza tra select e bottoni */
+#listSelector {
+  margin-right: 10px;
+}
+
+/* Distanza sotto il blocco liste (select + bottoni) */
+#listSelector, #listActions {
+  margin-bottom: 30px;
+}
+
+/* Select e input */
+select,
+input[type=text],
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  margin-bottom: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  background-color: #fff;
+}
+
+/* Pulsanti */
 button {
-  background-color: #5757e7;
+  background-color: #4a90e2;
   color: white;
   border: none;
-  padding: 10px 20px;
-  font-size: 20px;
-  border-radius: 150px;
-  border-bottom-right-radius: 22px;
-  border-top-left-radius: 22px;
-  margin: 5px;
+  padding: 10px 16px;
+  margin: 6px;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
 }
 
 button:hover {
-  background-color: #d6af30;
+  background-color: #357ab8;
 }
 
-#noteListDiv {
-  padding: 5px;
-  border-radius: 10px;
-  background-color: #ebe96f;
-  color: rgb(190, 35, 35);
-  width: 40%;
-  margin: 0 auto;
-  padding: 20px;
-  border-radius: 10px;
-  background-color: #ebe96f;
-  color: rgb(190, 35, 35);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+/* Lista note */
+ul {
   list-style: none;
+  padding: 0;
+  margin-top: 10px;
   text-align: left;
 }
 
-input[type=checkbox] {
-  width: 25px;
-  height: 25px;
-  accent-color: #4d943c;
-  cursor: pointer;
-  margin: 10px;
-  transform: scale(1.2);
-}
-
-.edit-btn,
-.delete-btn {
-  margin-left: 10px;
-  cursor: pointer;
-  border: none;
-  background: none;
-  padding: 8px 8px;
-}
-
-.edit-btn:hover {
-  background-color: rgb(105, 105, 212);
-}
-
-.delete-btn:hover {
-  background-color: rgb(209, 53, 53);
-}
-
-#listSelector {
-  font-size: 18px;
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 2px solid #4CAF50;
-  background-color: #e8f5e9;
-  color: #2e7d32;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-#listSelector:hover {
-  background-color: #c8e6c9;
-}
-
-#newListForm {
-  margin-top: 1em;
+li {
+  padding: 8px;
+  margin-bottom: 8px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
   display: flex;
   align-items: center;
-  gap: 0.5em;
-  width: fit-content;
-  margin: 0 auto;
+  justify-content: space-between;
 }
 
-#newListForm input {
-  padding: 0.5em;
+/* Checkbox + testo */
+li span {
+  flex-grow: 1;
+  margin-left: 8px;
+}
+
+/* Bottoni nelle note */
+.edit-btn,
+.delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  margin-left: 6px;
+}
+
+/* Modal (popup generici) */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px 30px;
+  border-radius: 6px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.modal-content input {
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  margin: 0 auto;
-  width: 150px;
-  margin-bottom: 22px;
-  margin-top: 5px;
 }
 
-#newListForm button {
-  padding: 0.5em;
-  background-color: #4CAF50;
+/* Pulsanti modifica/cancella liste */
+#listActions button {
+  background: none;
   border: none;
-  color: white;
-  border-radius: 4px;
+  font-size: 1.2rem;
   cursor: pointer;
-  margin: 0 auto;
-  margin-bottom: 22px;
-  margin-top: 5px;
+  padding: 4px;
+  margin-left: 6px; /* Spazio tra i bottoni */
 }
 
-#newListForm button:hover {
-  background-color: #45a049;
+#listActions button:hover {
+  background-color: #eee;
+  border-radius: 4px;
 }
 
 /*# sourceMappingURL=main.css.map */

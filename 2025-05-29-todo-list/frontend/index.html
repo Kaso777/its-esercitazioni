@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html>
 
 <head>
@@ -12,13 +11,36 @@
 
 <body>
 	<div class="main-content">
+
+		<div id="deleteListPopup" class="modal" style="display: none;">
+			<div class="modal-content">
+				<p>Vuoi davvero eliminare questa lista?</p>
+				<button id="confirmDeleteList">Conferma</button>
+				<button id="cancelDeleteList">Annulla</button>
+			</div>
+		</div>
+
+		<div id="editListPopup" class="modal" style="display: none;">
+			<div class="modal-content">
+				<p>Modifica il nome della lista:</p>
+				<input type="text" id="editListInput" />
+				<button id="confirmEditList">Salva</button>
+				<button id="cancelEditList">Annulla</button>
+			</div>
+		</div>
+
 		<h1>To Do List ✅ </h1>
 
 		<div>
-			<label for="listSelector">📂 Scegli lista:</label>
+			<label for="listSelector">Scegli lista:</label>
 			<select id="listSelector"></select>
+			<div id="listActions" style="display: flex; gap: 10px; margin-top: 10px;">
+				<button id="editListBtn" title="Modifica lista">✏️</button>
+				<button id="deleteListBtn" title="Elimina lista">🗑️</button>
+			</div>
+
 		</div>
-		
+
 		<form id="newListForm">
 			<input type="text" id="newListName" placeholder="Scrivi nuova lista" required />
 			<button type="submit">Aggiungi Lista</button>
@@ -38,6 +60,25 @@
 			<button id="deleteCompleted">Cancella Selezionate</button>
 		</div>
 	</div>
+	<div id="confirmPopup" class="modal" style="display:none;">
+		<div class="modal-content">
+			<p>Sei sicuro di voler eliminare questa nota?</p>
+			<button id="confirmYes">Sì</button>
+			<button id="confirmNo">No</button>
+		</div>
+	</div>
+	<div id="editPopup" class="modal" style="display: none;">
+		<div class="modal-content">
+			<h3>Modifica nota</h3>
+			<input type="text" id="editInput" />
+			<div style="margin-top: 15px;">
+				<button id="editConfirm">Salva</button>
+				<button id="editCancel">Annulla</button>
+			</div>
+		</div>
+	</div>
+
+
 	<script src="./script/main.js"></script>
 </body>
 
