@@ -36,7 +36,7 @@ class Ticket {
     }
 
     public function __toString() {
-        return "Ticket di: {$this->nome_utente} \n Tipologia: {$this->tipo_ticket} \n Contenuto: {$this->contenuto}";
+        return "Ticket di: {$this->nome_utente} \n \n Tipologia: {$this->tipo_ticket} \n \n Contenuto: {$this->contenuto}";
     }
 
     public function validate() {
