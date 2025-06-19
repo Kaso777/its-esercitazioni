@@ -3,7 +3,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Corpo pagina */
@@ -39,7 +39,7 @@ form {
 }
 
 /* Input, select, textarea */
-input[type="text"],
+input[type=text],
 select,
 textarea {
   padding: 10px 15px;
@@ -50,7 +50,7 @@ textarea {
   resize: vertical;
 }
 
-input[type="text"]:focus,
+input[type=text]:focus,
 select:focus,
 textarea:focus {
   border-color: #7a9e9f;
@@ -116,3 +116,5 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
+/*# sourceMappingURL=main.css.map */

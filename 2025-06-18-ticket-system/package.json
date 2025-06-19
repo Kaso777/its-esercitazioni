@@ -4,17 +4,20 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "serve": "live-server frontend",
-    "sass": "sass public/css/main.scss:public/src/main.css --watch",
-
-    "start": "concurrently \"npm run docker\" \"npm run sass\""
+    
+    "serve": "live-server public",
+    "sass": "sass src/scss/main.scss:public/css/main.css --watch",
+    "frontend": "concurrently --names \"SASS,SERVE\" \"npm run sass\" \"npm run serve\""
+    
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  
   "devDependencies": {
     "concurrently": "^9.1.2",
     "live-server": "^1.2.2",
-    "sass": "^1.89.2"
+
+    "sass": "^1.89.0"
   }
 }
