@@ -3,6 +3,7 @@
 // #message        // L'input text
 
 const listSelector = document.querySelector('#listSelector');
+
 async function loadLists() {
     try {
         const lists = await apiRequest('http://localhost:3000/api/lists');
@@ -15,12 +16,90 @@ async function loadLists() {
             listSelector.appendChild(option);
         });
 
+        // Abilita o disabilita i bottoni in base a quante liste ci sono
+        if (lists.length === 0) {
+            editListBtn.disabled = true;
+            deleteListBtn.disabled = true;
+        } else {
+            editListBtn.disabled = false;
+            deleteListBtn.disabled = false;
+        }
+
+
         // Dopo aver caricato le liste, carica anche le note della prima lista
         loadNotes();
     } catch (err) {
         alert('Errore nel caricamento delle liste.');
     }
 }
+
+const editListBtn = document.getElementById('editListBtn');
+const deleteListBtn = document.getElementById('deleteListBtn');
+
+const editListPopup = document.getElementById('editListPopup');
+const editListInput = document.getElementById('editListInput');
+const confirmEditListBtn = document.getElementById('confirmEditList');
+const cancelEditListBtn = document.getElementById('cancelEditList');
+
+const deleteListPopup = document.getElementById('deleteListPopup');
+const confirmDeleteListBtn = document.getElementById('confirmDeleteList');
+const cancelDeleteListBtn = document.getElementById('cancelDeleteList');
+
+// Apri popup modifica lista
+editListBtn.addEventListener('click', () => {
+    const selectedOption = listSelector.options[listSelector.selectedIndex];
+    if (!selectedOption) return alert('Seleziona prima una lista');
+
+    editListInput.value = selectedOption.textContent;
+    editListPopup.style.display = 'flex';
+});
+
+// Conferma modifica lista
+confirmEditListBtn.addEventListener('click', async () => {
+    const newName = editListInput.value.trim();
+    const listId = listSelector.value;
+    if (!newName) return alert('Inserisci un nome valido');
+
+    try {
+        await apiRequest(`http://localhost:3000/api/lists/${listId}`, 'PUT', { name: newName });
+        editListPopup.style.display = 'none';
+        await loadLists();
+        listSelector.value = listId; // Reseleziona la lista modificata
+        loadNotes();
+    } catch {
+        alert('Errore nella modifica della lista');
+    }
+});
+
+// Annulla modifica lista
+cancelEditListBtn.addEventListener('click', () => {
+    editListPopup.style.display = 'none';
+});
+
+// Apri popup cancellazione lista
+deleteListBtn.addEventListener('click', () => {
+    if (!listSelector.value) return alert('Seleziona prima una lista');
+    deleteListPopup.style.display = 'flex';
+});
+
+// Conferma cancellazione lista
+confirmDeleteListBtn.addEventListener('click', async () => {
+    const listId = listSelector.value;
+    try {
+        await apiRequest(`http://localhost:3000/api/lists/${listId}`, 'DELETE');
+        deleteListPopup.style.display = 'none';
+        await loadLists();
+        loadNotes();
+    } catch {
+        alert('Errore nella cancellazione della lista');
+    }
+});
+
+// Annulla cancellazione lista
+cancelDeleteListBtn.addEventListener('click', () => {
+    deleteListPopup.style.display = 'none';
+});
+
 
 
 
