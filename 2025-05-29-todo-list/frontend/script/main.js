@@ -1,351 +1,383 @@
-// #noteListDiv    // Per mostrare le note
-// #messageForm    // Il form per l'input
-// #message        // L'input text
-
+// Seleziono dal DOM l'elemento <select> con id 'listSelector', che contiene le liste disponibili
 const listSelector = document.querySelector('#listSelector');
 
+// Funzione asincrona per caricare tutte le liste dal backend
 async function loadLists() {
     try {
+        // Faccio una richiesta GET all'endpoint '/api/lists' per ottenere tutte le liste
         const lists = await apiRequest('http://localhost:3000/api/lists');
-        listSelector.innerHTML = ''; // Svuota il menu a tendina
 
+        // Svuoto il menu a tendina per evitare duplicati quando ricarico le liste
+        listSelector.innerHTML = '';
+
+        // Per ogni lista ricevuta dal server, creo un'opzione nel select
         lists.forEach(list => {
-            const option = document.createElement('option');
-            option.value = list.id;
-            option.textContent = list.name;
-            listSelector.appendChild(option);
+            const option = document.createElement('option'); // Creo un elemento <option>
+            option.value = list.id;                          // Imposto il valore con l'id della lista
+            option.textContent = list.name;                  // Imposto il testo visibile con il nome della lista
+            listSelector.appendChild(option);                // Aggiungo l'opzione al select
         });
 
-        // Abilita o disabilita i bottoni in base a quante liste ci sono
+        // Se non ci sono liste, disabilito i pulsanti di modifica e cancellazione
         if (lists.length === 0) {
             editListBtn.disabled = true;
             deleteListBtn.disabled = true;
         } else {
+            // Altrimenti li abilito
             editListBtn.disabled = false;
             deleteListBtn.disabled = false;
         }
 
-
-        // Dopo aver caricato le liste, carica anche le note della prima lista
+        // Dopo aver caricato le liste, carico le note relative alla lista selezionata (default la prima)
         loadNotes();
     } catch (err) {
+        // Se c'è un errore (es. server non raggiungibile), mostro un alert all'utente
         alert('Errore nel caricamento delle liste.');
     }
 }
 
+// Seleziono i pulsanti per modificare e cancellare la lista dalla pagina HTML tramite id
 const editListBtn = document.getElementById('editListBtn');
 const deleteListBtn = document.getElementById('deleteListBtn');
 
+// Seleziono i popup e i relativi elementi per la modifica della lista
 const editListPopup = document.getElementById('editListPopup');
 const editListInput = document.getElementById('editListInput');
 const confirmEditListBtn = document.getElementById('confirmEditList');
 const cancelEditListBtn = document.getElementById('cancelEditList');
 
+// Seleziono i popup e i relativi elementi per la cancellazione della lista
 const deleteListPopup = document.getElementById('deleteListPopup');
 const confirmDeleteListBtn = document.getElementById('confirmDeleteList');
 const cancelDeleteListBtn = document.getElementById('cancelDeleteList');
 
-// Apri popup modifica lista
+// Aggiungo un listener al pulsante "Modifica lista" per aprire il popup di modifica
 editListBtn.addEventListener('click', () => {
+    // Prendo l'opzione selezionata nel menu a tendina
     const selectedOption = listSelector.options[listSelector.selectedIndex];
-    if (!selectedOption) return alert('Seleziona prima una lista');
+    if (!selectedOption) return alert('Seleziona prima una lista'); // Se nessuna lista selezionata, avviso l'utente
 
+    // Inserisco il nome della lista nel campo di input del popup
     editListInput.value = selectedOption.textContent;
+    // Mostro il popup impostando il display a 'flex' (visibile)
     editListPopup.style.display = 'flex';
 });
 
-// Conferma modifica lista
+// Listener per il pulsante di conferma della modifica lista
 confirmEditListBtn.addEventListener('click', async () => {
+    // Prendo il nuovo nome inserito dall'utente e tolgo spazi inutili
     const newName = editListInput.value.trim();
+    // Prendo l'id della lista selezionata
     const listId = listSelector.value;
-    if (!newName) return alert('Inserisci un nome valido');
+
+    if (!newName) return alert('Inserisci un nome valido'); // Se il nome è vuoto, avviso
 
     try {
+        // Invio la richiesta PUT per modificare la lista sul server
         await apiRequest(`http://localhost:3000/api/lists/${listId}`, 'PUT', { name: newName });
-        editListPopup.style.display = 'none';
-        await loadLists();
-        listSelector.value = listId; // Reseleziona la lista modificata
-        loadNotes();
+        editListPopup.style.display = 'none'; // Nascondo il popup di modifica
+        await loadLists();                     // Ricarico le liste per aggiornare la vista
+        listSelector.value = listId;           // Reseleziono la lista modificata nel menu
+        loadNotes();                           // Ricarico le note relative alla lista modificata
     } catch {
-        alert('Errore nella modifica della lista');
+        alert('Errore nella modifica della lista'); // Se qualcosa va storto, avviso
     }
 });
 
-// Annulla modifica lista
+// Listener per il pulsante annulla modifica lista, chiude il popup
 cancelEditListBtn.addEventListener('click', () => {
     editListPopup.style.display = 'none';
 });
 
-// Apri popup cancellazione lista
+// Listener per il pulsante "Cancella lista" che apre il popup di conferma cancellazione
 deleteListBtn.addEventListener('click', () => {
-    if (!listSelector.value) return alert('Seleziona prima una lista');
-    deleteListPopup.style.display = 'flex';
+    if (!listSelector.value) return alert('Seleziona prima una lista'); // Controllo che ci sia una lista selezionata
+    deleteListPopup.style.display = 'flex'; // Mostro il popup di conferma cancellazione
 });
 
-// Conferma cancellazione lista
+// Listener per il pulsante di conferma cancellazione lista
 confirmDeleteListBtn.addEventListener('click', async () => {
-    const listId = listSelector.value;
+    const listId = listSelector.value; // Prendo l'id della lista selezionata
+
     try {
+        // Mando la richiesta DELETE al server per eliminare la lista
         await apiRequest(`http://localhost:3000/api/lists/${listId}`, 'DELETE');
-        deleteListPopup.style.display = 'none';
-        await loadLists();
-        loadNotes();
+        deleteListPopup.style.display = 'none'; // Nascondo il popup
+        await loadLists();                       // Ricarico le liste per aggiornare la vista
+        loadNotes();                            // Ricarico le note (che ora saranno vuote o relative a un'altra lista)
     } catch {
-        alert('Errore nella cancellazione della lista');
+        alert('Errore nella cancellazione della lista'); // Avviso in caso di errore
     }
 });
 
-// Annulla cancellazione lista
+// Listener per il pulsante annulla cancellazione, chiude il popup
 cancelDeleteListBtn.addEventListener('click', () => {
     deleteListPopup.style.display = 'none';
 });
 
 
-
-
-// Funzione che gestisce tutte le chiamate API al backend
-// È asincrona perché deve attendere le risposte dal server
+// Funzione generica per fare chiamate API asincrone al server
 async function apiRequest(url, method = 'GET', data = null) {
-    // Prepara le opzioni base per la richiesta fetch
+    // Preparo le opzioni per fetch: metodo e headers (content-type JSON)
     const options = {
-        method,  // Metodo HTTP (GET, POST, etc)
-        headers: { 'Content-Type': 'application/json' },  // Dice al server che mandiamo JSON
+        method,
+        headers: { 'Content-Type': 'application/json' },
     };
 
-    // Se è una richiesta NON GET (es. POST) e abbiamo dei dati
-    // Li convertiamo in JSON e li mettiamo nel body
+    // Se è una richiesta con metodo diverso da GET e ho dati, li converto in JSON e li metto nel body
     if (method !== 'GET' && data) {
         options.body = JSON.stringify(data);
     }
 
-    // Se è una richiesta GET e abbiamo dei dati
-    // Li aggiungiamo all'URL come parametri query (?chiave=valore)
+    // Se è una GET e ho dati, li aggiungo all'URL come parametri query
     if (method === 'GET' && data) {
         const params = new URLSearchParams(data).toString();
         url += '?' + params;
     }
 
     try {
-        // Fa la richiesta al server e attende la risposta
+        // Eseguo la richiesta fetch e aspetto la risposta
         const response = await fetch(url, options);
-        // Se la risposta non è ok (status 200-299), lancia un errore
+        // Se la risposta non è OK (200-299), lancio un errore per il catch
         if (!response.ok) throw new Error(`HTTP error ${response.status}`);
-        // Converte la risposta in JSON e la restituisce
+        // Ritorno la risposta convertita in JSON
         return await response.json();
     } catch (error) {
-        // Se c'è un errore, lo mostra in console e lo propaga
+        // In caso di errore lo loggo e lo rilancio all'esterno
         console.error('API Request Error:', error);
         throw error;
     }
 }
 
-// Ottiene riferimenti agli elementi HTML che ci servono
-const noteListDiv = document.querySelector('#noteListDiv');    // Div dove mostriamo le note
-const messageForm = document.querySelector('#messageForm');    // Form per inserire nuove note
-const messageInput = document.querySelector('#message');       // Campo di input per il testo
+// Seleziono gli elementi dal DOM per la gestione delle note
+const noteListDiv = document.querySelector('#noteListDiv');    // Div dove mostro le note
+const messageForm = document.querySelector('#messageForm');    // Form per aggiungere nuove note
+const messageInput = document.querySelector('#message');       // Input testuale per la nuova nota
 
-// Funzione che mostra le note nella pagina
+// Funzione che mostra le note in pagina, accetta un array di note
 function renderNotes(notes) {
+    // Svuoto il div delle note per aggiornarlo con le nuove
     noteListDiv.innerHTML = '';
 
+    // Se non ci sono note, mostro un messaggio all'utente
     if (notes.length === 0) {
         noteListDiv.textContent = 'Nessuna nota presente.';
         return;
     }
 
+    // Per ogni nota creo un <li> che contiene checkbox, testo e bottoni azione
     notes.forEach(note => {
         const li = document.createElement('li');
-        li.style.display = 'flex';
-        li.style.alignItems = 'center';
+        li.style.display = 'flex';          // Flex per layout orizzontale
+        li.style.alignItems = 'center';     // Allineo verticalmente al centro
 
+        // Checkbox per indicare stato completato o no
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
-        checkbox.checked = note.status;
+        checkbox.checked = note.status;     // Checkbox selezionata se lo status è true
         checkbox.className = 'note-checkbox';
 
+        // Span che contiene il testo della nota
         const label = document.createElement('span');
         label.className = 'note-text';
         label.textContent = note.note;
 
+        // Div contenente i bottoni azione (modifica, elimina)
         const actionsDiv = document.createElement('div');
         actionsDiv.className = 'note-actions';
 
+        // Bottone modifica con icona matita
         const editButton = document.createElement('button');
         editButton.textContent = '✏️';
         editButton.className = 'edit-btn';
 
+        // Bottone elimina con icona cestino
         const deleteButton = document.createElement('button');
         deleteButton.textContent = '🗑️';
         deleteButton.className = 'delete-btn';
 
+        // Aggiungo i bottoni al div azioni
         actionsDiv.appendChild(editButton);
         actionsDiv.appendChild(deleteButton);
 
+        // Aggiungo checkbox, testo e azioni al <li>
         li.appendChild(checkbox);
         li.appendChild(label);
         li.appendChild(actionsDiv);
 
-        // Event listener modifica
+        // Ora gestisco gli eventi legati a modifica, cancellazione e cambio stato
+
+        // Riferimenti al popup di modifica e suoi elementi
         const editPopup = document.getElementById('editPopup');
         const editInput = document.getElementById('editInput');
         const editConfirm = document.getElementById('editConfirm');
         const editCancel = document.getElementById('editCancel');
 
+        // Quando clicco il bottone modifica apro il popup e precompilo il testo
         editButton.addEventListener('click', () => {
-            editInput.value = note.note;
-            editPopup.style.display = 'flex';
+            editInput.value = note.note;         // Inserisco testo attuale della nota
+            editPopup.style.display = 'flex';    // Mostro popup
 
+            // Alla conferma modifica aggiorno la nota via API
             editConfirm.onclick = async () => {
-                const newText = editInput.value.trim();
+                const newText = editInput.value.trim(); // Prendo testo nuovo
+                // Se il testo è cambiato e non è vuoto, faccio la modifica
                 if (newText && newText !== note.note) {
                     try {
                         await apiRequest(
                             `http://localhost:3000/api/notes/${note.id}`,
                             'PUT',
-                            { note: newText, status: note.status }
+                            { note: newText, status: note.status } // Mando testo aggiornato e stato attuale
                         );
-                        editPopup.style.display = 'none';
-                        loadNotes();
+                        editPopup.style.display = 'none'; // Chiudo popup
+                        loadNotes();                      // Ricarico le note aggiornate
                     } catch {
                         alert('Errore nella modifica della nota.');
                     }
                 } else {
+                    // Se testo vuoto o non cambiato, chiudo popup senza fare nulla
                     editPopup.style.display = 'none';
                 }
             };
 
+            // Se clicco annulla chiudo popup senza modifiche
             editCancel.onclick = () => {
                 editPopup.style.display = 'none';
             };
         });
 
-        // Event listener cancellazione
+        // Riferimenti popup conferma cancellazione nota
         const confirmPopup = document.getElementById('confirmPopup');
         const confirmYes = document.getElementById('confirmYes');
         const confirmNo = document.getElementById('confirmNo');
 
+        // Al click su elimina apro il popup di conferma cancellazione
         deleteButton.addEventListener('click', () => {
             confirmPopup.style.display = 'flex';
 
+            // Se confermo la cancellazione chiamo API DELETE per eliminare la nota
             confirmYes.onclick = async () => {
-                confirmPopup.style.display = 'none';
+                confirmPopup.style.display = 'none'; // Chiudo popup
                 try {
                     await apiRequest(`http://localhost:3000/api/notes/${note.id}`, 'DELETE');
-                    loadNotes();
+                    loadNotes(); // Ricarico le note dopo eliminazione
                 } catch {
                     alert('Errore nella cancellazione della nota.');
                 }
             };
 
+            // Se annullo chiudo il popup senza azioni
             confirmNo.onclick = () => {
                 confirmPopup.style.display = 'none';
             };
         });
 
-        // Event listener cambio stato checkbox
+        // Listener per cambio stato checkbox completato
         checkbox.addEventListener('change', async () => {
             try {
+                // Mando aggiornamento stato completato/not completato via API PUT
                 await apiRequest(
                     `http://localhost:3000/api/notes/${note.id}`,
                     'PUT',
                     { status: checkbox.checked }
                 );
             } catch {
+                // Se errore, avviso e riporto checkbox al valore precedente
                 alert('Errore nell\'aggiornamento dello stato.');
                 checkbox.checked = !checkbox.checked;
             }
         });
 
+        // Aggiungo la singola nota (li) al div contenitore delle note
         noteListDiv.appendChild(li);
     });
 }
 
+// Seleziono il pulsante per eliminare tutte le note completate
+const deleteCompletedButton = document.querySelector('#deleteCompleted');
 
-// Script per eliminare le note completate
-const deleteCompletedButton = document.querySelector('#deleteCompleted'); // Seleziona il pulsante con id "deleteCompleted" dalla pagina HTML
+// Al click sul pulsante chiamo la API per eliminare tutte le note con status completato
 deleteCompletedButton.addEventListener('click', async () => {
-    // Aggiunge un event listener al pulsante che ascolta il click
-    // La funzione collegata è asincrona perché utilizza `await`
     try {
-        // Chiede al server di eliminare le note completate
         await apiRequest('http://localhost:3000/api/notes/completed', 'DELETE');
-        // Esegue una richiesta HTTP DELETE verso l'endpoint /api/notes/completed
-        loadNotes();  // Se la richiesta va a buon fine ricarica la lista delle note
+        loadNotes(); // Ricarico la lista delle note dopo eliminazione
     } catch {
-        // Se qualcosa va storto durante la richiesta (es. errore di rete, risposta 500...)
         alert('Errore nell\'eliminazione delle note completate.');
-        // Mostra un messaggio d’errore all’utente
     }
 });
 
-// Script per aggiungere una nuova lista
+// Seleziono il form per creare una nuova lista e il campo input per il nome
 const newListForm = document.querySelector('#newListForm');
 const newListNameInput = document.querySelector('#newListName');
 
+// Al submit del form di creazione nuova lista
 newListForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const name = newListNameInput.value.trim();
-    if (!name) return;
+    event.preventDefault(); // Prevengo refresh pagina
+
+    const name = newListNameInput.value.trim(); // Prendo il nome inserito e tolgo spazi
+
+    if (!name) return; // Se il nome è vuoto, non faccio nulla
 
     try {
+        // Chiamo API per creare una nuova lista passando il nome
         await apiRequest('http://localhost:3000/api/lists/add', 'POST', { name });
-        newListNameInput.value = '';
-        loadLists(); // Ricarica il menu a tendina con le nuove liste
+        newListNameInput.value = ''; // Svuoto il campo input
+        loadLists(); // Ricarico le liste per mostrare la nuova
     } catch {
         alert('Errore nella creazione della lista.');
     }
 });
 
-
-
-
-// Funzione che carica le note dal server
+// Funzione per caricare le note di una lista specifica
 async function loadNotes() {
-    const selectedListId = listSelector.value;
+    const selectedListId = listSelector.value; // Prendo l'id della lista selezionata
 
-    // Se non c'è alcuna lista selezionata, mostra un messaggio e interrompi la funzione
+    // Se nessuna lista selezionata, mostro messaggio e esco
     if (!selectedListId) {
         noteListDiv.textContent = 'Nessuna lista disponibile da cui caricare le note.';
         return;
     }
 
     try {
+        // Chiamo API per ottenere tutte le note relative alla lista selezionata
         const notes = await apiRequest('http://localhost:3000/api/notes', 'GET', { list_id: selectedListId });
-        renderNotes(notes);
+        renderNotes(notes); // Passo le note alla funzione che le renderizza
     } catch {
         noteListDiv.textContent = 'Errore nel caricamento delle note.';
     }
 }
 
-// Gestisce l'invio del form per aggiungere una nuova nota
+// Al submit del form per aggiungere una nuova nota
 messageForm.addEventListener('submit', async (event) => {
-    event.preventDefault();  // Previene il refresh della pagina
-    const text = messageInput.value.trim();  // Prende il testo e rimuove spazi
-    if (!text) return;  // Se il testo è vuoto, non fa nulla
+    event.preventDefault(); // Prevengo il refresh pagina
+
+    const text = messageInput.value.trim(); // Prendo il testo inserito e tolgo spazi
+
+    if (!text) return; // Se testo vuoto, non faccio nulla
 
     try {
-        // Invia la nuova nota al server
+        // Invio al server la nuova nota associata alla lista selezionata
         await apiRequest('http://localhost:3000/api/notes/add', 'POST', { note: text, list_id: listSelector.value });
 
-        messageInput.value = '';  // Svuota il campo input
-        loadNotes();  // Ricarica la lista delle note
+        messageInput.value = ''; // Svuoto il campo input dopo invio
+        loadNotes();             // Ricarico le note per mostrare la nuova
     } catch {
-        // Se c'è un errore, mostra un alert
         alert('Errore nell\'invio della nota.');
     }
 });
 
-// Quando la pagina si carica, mostra subito le note
+// Quando la pagina si carica, carico subito le liste e le note relative
 loadLists();
-// Carica le liste all'avvio
+
+// Ogni volta che cambio lista nel menu a tendina, carico le note della lista selezionata
 listSelector.addEventListener('change', () => {
     loadNotes();
 });
 
-// Rende le textarea auto-espandibili
+// Imposto le textarea affinché si adattino in altezza al contenuto digitato
 document.querySelectorAll('textarea').forEach(el => {
     el.addEventListener('input', () => {
-        el.style.height = 'auto';
-        el.style.height = el.scrollHeight + 'px';
+        el.style.height = 'auto';              // Resetto altezza
+        el.style.height = el.scrollHeight + 'px'; // Imposto altezza pari all'altezza del contenuto
     });
 });
