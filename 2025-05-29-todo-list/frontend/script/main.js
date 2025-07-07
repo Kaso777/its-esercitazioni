@@ -146,33 +146,46 @@ const messageInput = document.querySelector('#message');       // Campo di input
 
 // Funzione che mostra le note nella pagina
 function renderNotes(notes) {
-    // Svuota il div delle note
     noteListDiv.innerHTML = '';
 
-    // Se non ci sono note, mostra un messaggio
     if (notes.length === 0) {
         noteListDiv.textContent = 'Nessuna nota presente.';
         return;
     }
 
-    // Crea un ul per contenere tutti i li
-    const ul = document.createElement('ul');
-
-    // Per ogni nota, crea un paragrafo e lo aggiunge alla pagina
     notes.forEach(note => {
         const li = document.createElement('li');
+        li.style.display = 'flex';
+        li.style.alignItems = 'center';
+
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
-        checkbox.checked = note.status;  // Imposta lo stato della checkbox
+        checkbox.checked = note.status;
+        checkbox.className = 'note-checkbox';
 
+        const label = document.createElement('span');
+        label.className = 'note-text';
+        label.textContent = note.note;
 
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'note-actions';
 
-
-        // Crea il bottone di modifica
         const editButton = document.createElement('button');
         editButton.textContent = '✏️';
         editButton.className = 'edit-btn';
 
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = '🗑️';
+        deleteButton.className = 'delete-btn';
+
+        actionsDiv.appendChild(editButton);
+        actionsDiv.appendChild(deleteButton);
+
+        li.appendChild(checkbox);
+        li.appendChild(label);
+        li.appendChild(actionsDiv);
+
+        // Event listener modifica
         const editPopup = document.getElementById('editPopup');
         const editInput = document.getElementById('editInput');
         const editConfirm = document.getElementById('editConfirm');
@@ -189,10 +202,7 @@ function renderNotes(notes) {
                         await apiRequest(
                             `http://localhost:3000/api/notes/${note.id}`,
                             'PUT',
-                            {
-                                note: newText,
-                                status: note.status
-                            }
+                            { note: newText, status: note.status }
                         );
                         editPopup.style.display = 'none';
                         loadNotes();
@@ -209,19 +219,14 @@ function renderNotes(notes) {
             };
         });
 
-
-        // Crea il bottone di cancellazione singola
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = '🗑️';
-        deleteButton.className = 'delete-btn';
-
+        // Event listener cancellazione
         const confirmPopup = document.getElementById('confirmPopup');
         const confirmYes = document.getElementById('confirmYes');
         const confirmNo = document.getElementById('confirmNo');
 
-        // Listener per la cancellazione singola
         deleteButton.addEventListener('click', () => {
             confirmPopup.style.display = 'flex';
+
             confirmYes.onclick = async () => {
                 confirmPopup.style.display = 'none';
                 try {
@@ -231,14 +236,13 @@ function renderNotes(notes) {
                     alert('Errore nella cancellazione della nota.');
                 }
             };
+
             confirmNo.onclick = () => {
                 confirmPopup.style.display = 'none';
             };
         });
 
-
-
-        // Listener per aggiornare lo stato della nota nel DB 
+        // Event listener cambio stato checkbox
         checkbox.addEventListener('change', async () => {
             try {
                 await apiRequest(
@@ -248,21 +252,14 @@ function renderNotes(notes) {
                 );
             } catch {
                 alert('Errore nell\'aggiornamento dello stato.');
-                checkbox.checked = !checkbox.checked; // Ripristina stato se errore
+                checkbox.checked = !checkbox.checked;
             }
         });
-
-        const label = document.createElement('span'); // Crea un'etichetta per la checkbox
-        label.textContent = note.note;  // Imposta il testo della nota
-
-        li.appendChild(checkbox);  // Aggiunge la checkbox al div
-        li.appendChild(label);      // Aggiunge l'etichetta al div
-        li.appendChild(editButton); // Aggiunge il pulsante di modifica ad ogni nota
-        li.appendChild(deleteButton); // Aggiunge il pulsante di eliminazione ad ogni nota
 
         noteListDiv.appendChild(li);
     });
 }
+
 
 // Script per eliminare le note completate
 const deleteCompletedButton = document.querySelector('#deleteCompleted'); // Seleziona il pulsante con id "deleteCompleted" dalla pagina HTML
@@ -304,14 +301,18 @@ newListForm.addEventListener('submit', async (event) => {
 
 // Funzione che carica le note dal server
 async function loadNotes() {
-    try {
-        const selectedListId = listSelector.value;
-        const notes = await apiRequest('http://localhost:3000/api/notes', 'GET', { list_id: selectedListId });
+    const selectedListId = listSelector.value;
 
-        // Le mostra nella pagina
+    // Se non c'è alcuna lista selezionata, mostra un messaggio e interrompi la funzione
+    if (!selectedListId) {
+        noteListDiv.textContent = 'Nessuna lista disponibile da cui caricare le note.';
+        return;
+    }
+
+    try {
+        const notes = await apiRequest('http://localhost:3000/api/notes', 'GET', { list_id: selectedListId });
         renderNotes(notes);
     } catch {
-        // Se c'è un errore, mostra un messaggio
         noteListDiv.textContent = 'Errore nel caricamento delle note.';
     }
 }
@@ -339,4 +340,12 @@ loadLists();
 // Carica le liste all'avvio
 listSelector.addEventListener('change', () => {
     loadNotes();
+});
+
+// Rende le textarea auto-espandibili
+document.querySelectorAll('textarea').forEach(el => {
+    el.addEventListener('input', () => {
+        el.style.height = 'auto';
+        el.style.height = el.scrollHeight + 'px';
+    });
 });
