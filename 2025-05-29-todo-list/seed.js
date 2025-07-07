@@ -4,6 +4,7 @@ const mysql = require('mysql2'); // Importa il modulo mysql2 per connettersi a M
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'myuser',
+    port: 3307,
     password: 'mypass',
     database: 'mydb',
 });

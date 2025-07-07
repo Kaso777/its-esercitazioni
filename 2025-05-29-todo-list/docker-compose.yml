@@ -3,14 +3,16 @@ services: # Dentro Services dichiaro i container che mi servono
     image: mysql:8.4 # Specifico l'immagine da usare
     container_name: lista_db # Nome del container
     ports: # Mappo le porte del container a quelle dell'host
-      - "3306:3306"
+      - "3307:3306"
     environment: # Variabili d'ambiente per configurare MySQL
       MYSQL_ROOT_PASSWORD: rootpass 
       MYSQL_DATABASE: mydb
       MYSQL_USER: myuser
       MYSQL_PASSWORD: mypass
-    volumes:
+    volumes: # Monto un volume per la persistenza dei dati
       - mysql-data:/var/lib/mysql
 
-volumes:
+
+volumes: # Dichiarazione del volume per i dati di MySQL che permette di mantenere i dati anche se il container viene ricreato che poi 
+# viene montato nel container MySQL. Come specificato sopra, il volume viene montato nella directory /var/lib/mysql del container.
   mysql-data:
