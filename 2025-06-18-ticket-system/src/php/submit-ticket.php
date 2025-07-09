@@ -16,6 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $messaggio = "<p>Usa il form per inviare un ticket.</p>";
 }
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>

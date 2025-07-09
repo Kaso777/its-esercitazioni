@@ -11,5 +11,4 @@ TO-DO LIST MANAGER
 ▢  Stile (SASS)
 
 ▢  Liste multiple
-        - Eliminare lista
-        - Modificare lista
+        - C R U D
