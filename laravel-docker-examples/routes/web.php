@@ -70,7 +70,4 @@ Route::get('/health', function () {
     return response()->json($status, $httpStatus);
 });
 
-
 Route::resource('cars', CarController::class);
-
-//Route::resource('car', CarController::class);
