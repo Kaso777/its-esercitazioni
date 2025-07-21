@@ -6,7 +6,7 @@
 <body>
     <h1>Modifica Auto</h1>
 
-    <form action="{{ route('car.update', $car->id) }}" method="POST">
+    <form action="{{ route('cars.update', $car->id) }}" method="POST">
         @csrf
         @method('PUT') <!-- Laravel richiede questo per simulare PUT -->
 
@@ -22,6 +22,6 @@
         <button type="submit">Salva modifiche</button>
     </form>
 
-    <a href="{{ route('car.index') }}">Torna alla lista</a>
+    <a href="{{ route('cars.index') }}">Torna alla lista</a>
 </body>
 </html>

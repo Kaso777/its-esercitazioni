@@ -11,7 +11,7 @@ class CarController extends Controller
     public function index()
 {
     $cars = Car::all();  // Prende tutte le righe dalla tabella 'cars'
-    return view('car.index', ['cars' => $cars]);  // Passa i dati alla view 'car.index'
+    return view('cars.index', ['cars' => $cars]);  // Passa i dati alla view 'cars.index'
 }
 
 
@@ -20,7 +20,7 @@ class CarController extends Controller
      */
     public function create()
     {
-        return view('car.add');
+        return view('cars.add');
     }
 
 
@@ -37,7 +37,7 @@ class CarController extends Controller
         ]);
 
         $car = Car::create($validated);
-        return redirect()->route('car.show', $car->id)
+        return redirect()->route('cars.show', $car->id)
                             ->with('success', 'Car created successfully!');
     }
 
@@ -52,7 +52,7 @@ class CarController extends Controller
         //if (!$car) {
           //  abort(404, 'Car not found');
         //}
-        return view('car.show', array('car'=>$car));
+        return view('cars.show', array('car'=>$car));
     }
 
 
@@ -62,7 +62,7 @@ class CarController extends Controller
     public function edit(string $id)
     {
         $car = Car::findOrFail($id); // Cerca l'auto, oppure lancia un 404
-        return view('car.edit', ['car' => $car]); // Mostra la view col form di modifica
+        return view('cars.edit', ['car' => $car]); // Mostra la view col form di modifica
     }
 
 
@@ -85,7 +85,7 @@ class CarController extends Controller
     $car->update($validated);
 
     // Redirect con messaggio di successo
-    return redirect()->route('car.show', $car->id)
+    return redirect()->route('cars.show', $car->id)
                      ->with('success', 'Car updated successfully!');
 }
 
@@ -98,7 +98,7 @@ class CarController extends Controller
     $car = Car::findOrFail($id);
     $car->delete();
 
-    return redirect()->route('car.index')->with('success', 'Car deleted successfully!');
+    return redirect()->route('cars.index')->with('success', 'Car deleted successfully!');
 }
 
 }

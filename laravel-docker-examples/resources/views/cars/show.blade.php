@@ -11,6 +11,6 @@
       <li>Produced on: {{ $car->produced_on }}</li>
     </ul>
 
-    <a href="{{ route('car.index') }}">Torna all'index</a>
+    <a href="{{ route('cars.index') }}">Torna all'index</a>
   </body>
 </html>

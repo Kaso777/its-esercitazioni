@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\CarController;
-use App\Http\Controllers\BookController;
 
 
 Route::get('/', function () {
@@ -72,10 +71,6 @@ Route::get('/health', function () {
 });
 
 
-Route::resource('books', 'BookController'::Class);
-
-
-
 Route::resource('cars', CarController::class);
 
-Route::resource('car', CarController::class);
+//Route::resource('car', CarController::class);

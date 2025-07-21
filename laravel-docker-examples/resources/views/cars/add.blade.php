@@ -16,7 +16,7 @@
         </div>
     @endif
 
-    <form action="{{ route('car.store') }}" method="POST">
+    <form action="{{ route('cars.store') }}" method="POST">
         @csrf
 
         <label for="make">Make:</label><br>
@@ -31,7 +31,7 @@
         <button type="submit">Add Car</button>
     </form>
 
-    <a href="{{ route('car.index') }}">Torna all'index</a>
+    <a href="{{ route('cars.index') }}">Torna all'index</a>
 
 </body>
 </html>
