@@ -1,0 +1,3 @@
+prendere package json da todolist in node togliendo live serve, nodemon,
+
+e copiare la cartella frontend ed adattarla per le giuste route

@@ -4,16 +4,22 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Lista;
+use App\Http\Resources\ListaResource;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ListaController extends Controller
 {
     /**
-     * Restituisce tutte le liste (con le relative note).
+     * Restituisce tutte le liste con le relative note.
      */
     public function index()
     {
-        return Lista::with('notes')->get();
+        // Recupera tutte le liste e le loro note collegate (eager loading)
+        $lists = Lista::with('notes')->get();
+
+        // Restituisce una collezione formattata tramite la Resource
+        return ListaResource::collection($lists);
     }
 
     /**
@@ -22,47 +28,65 @@ class ListaController extends Controller
     public function store(Request $request)
     {
         // Validazione dei dati in ingresso
-        $validated = $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:100',
         ]);
 
-        // Creazione e restituzione della nuova lista
-        return Lista::create($validated);
+        // Se la validazione fallisce, restituisce gli errori con codice 422
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Crea una nuova lista con i dati validati
+        $lista = Lista::create($request->all());
+
+        // Restituisce la risorsa appena creata formattata
+        return new ListaResource($lista);
     }
 
     /**
-     * Mostra una lista specifica (con le note collegate).
+     * Restituisce una lista specifica (con note collegate).
      */
-    public function show(string $id)
+    public function show(Lista $lista)
     {
-        return Lista::with('notes')->findOrFail($id);
+        // Carica le note collegate (lazy eager loading)
+        $lista->load('notes');
+
+        // Restituisce la lista come risorsa
+        return new ListaResource($lista);
     }
 
     /**
-     * Aggiorna una lista esistente.
+     * Aggiorna i dati di una lista esistente.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Lista $lista)
     {
-        // Validazione dei dati
-        $validated = $request->validate([
+        // Validazione dei dati ricevuti
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:100',
         ]);
 
-        // Trova la lista e aggiorna i dati
-        $lista = Lista::findOrFail($id);
-        $lista->update($validated);
+        // In caso di errore nella validazione, restituisce risposta con codice 422
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
-        return $lista;
+        // Aggiorna i dati della lista
+        $lista->update($request->all());
+
+        // Restituisce la lista aggiornata
+        return new ListaResource($lista);
     }
 
     /**
-     * Elimina una lista e le sue note collegate.
+     * Elimina una lista e tutte le note collegate.
      */
-    public function destroy(string $id)
+    public function destroy(Lista $lista)
     {
-        $lista = Lista::findOrFail($id);
+        // Elimina la lista
         $lista->delete();
 
-        return response()->json(['message' => 'Lista eliminata']);
+        // Restituisce una risposta vuota con codice 204 (No Content)
+        return response()->json(null, 204);
     }
 }

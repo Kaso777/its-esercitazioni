@@ -15,6 +15,6 @@ class Lista extends Model
     // Una lista ha molte note
     public function notes()
     {
-        return $this->hasMany(Note::class);
+        return $this->hasMany(Note::class, 'list_id');
     }
 }

@@ -1,0 +1,24 @@
+{
+    "name": "2025-05-27-full-stack-with-db",
+    "version": "1.0.0",
+    "description": "",
+    "main": "main.js",
+    "scripts": {
+        "serve": "live-server frontend",
+        "sass": "sass frontend/styles/main.scss:frontend/dist/main.css --watch",
+        "frontend": "concurrently --names \"SASS,SERVE\" \"npm run sass\" \"npm run serve\"",
+        "start": "concurrently --names \"BACKEND,FRONTEND\" \"npm run backend\" \"npm run frontend\""
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "express": "^5.1.0",
+        "mysql2": "^3.14.1"
+    },
+    "devDependencies": {
+        "concurrently": "^9.1.2",
+        "live-server": "^1.2.1",
+        "sass": "^1.89.0"
+    }
+}
