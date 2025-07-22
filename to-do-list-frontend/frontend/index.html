@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>To Do List</title>
+	<link rel="stylesheet" href="./dist/main.css" />
+</head>
+
+<body>
+	<main class="main-content">
+		<header>
+			<h1>To Do List ✅</h1>
+		</header>
+
+		<!-- GESTIONE LISTE -->
+		<section id="list-management">
+			<h2>📌 Liste</h2>
+			<div class="list-selector-group">
+				<label for="listSelector">Scegli lista:</label>
+				<select id="listSelector"></select>
+				<div id="listActions" class="list-actions">
+					<button id="editListBtn" title="Modifica lista">✏️</button>
+					<button id="deleteListBtn" title="Elimina lista">🗑️</button>
+				</div>
+			</div>
+
+			<form id="newListForm">
+				<input type="text" id="newListName" placeholder="Scrivi nuova lista" required />
+				<button type="submit">Aggiungi Lista</button>
+			</form>
+		</section>
+
+		<!-- GESTIONE NOTE -->
+		<section id="note-management">
+			<h2>📝 Note</h2>
+
+			<form id="messageForm">
+				<input type="text" id="message" placeholder="Scrivi nota" required />
+				<button type="submit" id="send-message">Aggiungi nota</button>
+			</form>
+
+			<ul id="noteListDiv"></ul>
+
+			<div class="delete-completed-wrapper">
+				<button id="deleteCompleted">Cancella Selezionate</button>
+			</div>
+		</section>
+
+		<!-- MODALI -->
+		<div id="deleteListPopup" class="modal">
+			<div class="modal-content">
+				<p>Vuoi davvero eliminare questa lista?</p>
+				<button id="confirmDeleteList">Conferma</button>
+				<button id="cancelDeleteList">Annulla</button>
+			</div>
+		</div>
+
+		<div id="editListPopup" class="modal">
+			<div class="modal-content">
+				<p>Modifica il nome della lista:</p>
+				<input type="text" id="editListInput" />
+				<button id="confirmEditList">Salva</button>
+				<button id="cancelEditList">Annulla</button>
+			</div>
+		</div>
+
+		<div id="confirmPopup" class="modal">
+			<div class="modal-content">
+				<p>Sei sicuro di voler eliminare questa nota?</p>
+				<button id="confirmYes">Sì</button>
+				<button id="confirmNo">No</button>
+			</div>
+		</div>
+
+		<div id="editPopup" class="modal">
+			<div class="modal-content">
+				<h3>Modifica nota</h3>
+				<input type="text" id="editInput" />
+				<div>
+					<button id="editConfirm">Salva</button>
+					<button id="editCancel">Annulla</button>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<script src="./script/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,254 @@
+/* Font da Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Kiwi+Maru&display=swap');
+
+:root {
+    --bg-main: #f9f6f1;
+    --bg-section: #fffaf3;
+    --accent: #5c8a5f;
+    /* Verde bamboo */
+    --accent-light: #7fb685;
+    --text-main: #2f2f2f;
+    --text-muted: #555;
+    --border: #e0dcd1;
+    --shadow: rgba(0, 0, 0, 0.05);
+    --aura: rgba(87, 140, 80, 0.4);
+    /* Verde bamboo aura */
+}
+
+/* ===================== BASE ===================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Kiwi Maru', serif;
+    background-color: var(--bg-main);
+    background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+    background-repeat: repeat;
+    color: var(--text-main);
+    padding: 2rem;
+    line-height: 1.6;
+}
+
+h1,
+h2 {
+    color: var(--accent);
+    margin-bottom: 1rem;
+}
+
+h1 {
+    font-size: 2.2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* ===================== CONTENUTO ===================== */
+
+.main-content {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: var(--bg-section);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 0 10px var(--shadow);
+    border: 1px solid var(--border);
+}
+
+section {
+    margin-bottom: 2.5rem;
+}
+
+/* ===================== FORM ===================== */
+
+input[type="text"] {
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 1rem;
+    width: 70%;
+    margin-bottom: 1rem;
+}
+
+/* ===================== BOTTONI ===================== */
+
+button {
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Aura verde bamboo + animazione pulsante */
+@keyframes auraPulse {
+    0% {
+        box-shadow: 0 0 0 rgba(87, 140, 80, 0.2);
+    }
+
+    50% {
+        box-shadow: 0 0 12px 5px var(--aura);
+    }
+
+    100% {
+        box-shadow: 0 0 0 rgba(87, 140, 80, 0.2);
+    }
+}
+
+button:hover {
+    background-color: var(--accent-light);
+}
+
+/* ===================== SELEZIONE LISTA ===================== */
+
+.list-selector-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+select {
+    padding: 0.6rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    font-size: 1rem;
+}
+
+/* Azioni lista (✏️ 🗑️) */
+.list-actions button {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    margin-left: 0.5rem;
+    color: var(--accent);
+}
+
+.list-actions button:hover {
+    animation: auraPulse 1.5s infinite;
+}
+
+/* ===================== NOTE ===================== */
+
+ul#noteListDiv {
+    list-style: none;
+    margin-top: 1rem;
+}
+
+ul#noteListDiv li {
+    background-color: #fff;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 0.8rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: nowrap;
+}
+
+.note-text {
+    flex: 1;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+.note-actions {
+    flex-shrink: 0;
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Pulsante elimina completati */
+.delete-completed-wrapper button {
+    background-color: var(--accent);
+}
+
+.delete-completed-wrapper button:hover {
+    animation: auraPulse 1.5s infinite;
+}
+
+/* ===================== MODALI ===================== */
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(47, 47, 47, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: var(--bg-section);
+    padding: 2rem;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content p,
+.modal-content h3 {
+    margin-bottom: 1rem;
+}
+
+.modal-content input {
+    margin-bottom: 1rem;
+}
+
+.modal-content button {
+    margin: 0.25rem;
+}
+
+/* ===================== UTILITY ===================== */
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.note-actions button {
+    font-size: 1.2rem;
+    border: none;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Modifica - verde chiaro */
+.note-actions .edit-btn {
+    background-color: #e3f5e5;
+    color: #4e8e58;
+}
+
+.note-actions .edit-btn:hover {
+    background-color: #5c8a5f;
+    color: white;
+    box-shadow: 0 0 8px 2px rgba(87, 140, 80, 0.4);
+}
+
+/* Elimina - rosso chiaro */
+.note-actions .delete-btn {
+    background-color: #fce2e2;
+    color: #a94442;
+}
+
+.note-actions .delete-btn:hover {
+    background-color: #c9302c;
+    color: white;
+    box-shadow: 0 0 8px 2px rgba(201, 48, 44, 0.4);
+}

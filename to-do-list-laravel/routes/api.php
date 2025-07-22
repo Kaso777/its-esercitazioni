@@ -17,9 +17,9 @@ use App\Http\Controllers\Api\NoteController;  // Assicurati che il nome sia corr
 */
 
 // Questa è una rotta di default per ottenere l'utente autenticato (spesso presente in Laravel)
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+//Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//    return $request->user();
+//});
 
 // --- ROTTE DELLA TUA TO-DO LIST ---
 
