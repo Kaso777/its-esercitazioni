@@ -8,20 +8,18 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class NoteResource extends JsonResource
 {
     /**
-     * Transform the resource into an array.
+     * Trasforma la risorsa in un array.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return array<string, mixed>
      */
-    public function toArray(Request $request): array
+    public function toArray($request)
     {
         return [
-            'id'          => $this->id,
-            'noteText'    => $this->note, // Ho rinominato 'note' a 'noteText' per chiarezza nell'API
-            'status'      => (bool) $this->status,
-            'listId'      => $this->list_id,
-            'lista'       => new ListaResource($this->whenLoaded('lista')),
-            'createdAt'   => $this->created_at,
-            'updatedAt'   => $this->updated_at,
+            'id' => $this->id,
+            'noteText' => $this->note,
+            'status' => $this->status,
+            'list_id' => $this->list_id,
         ];
     }
 }

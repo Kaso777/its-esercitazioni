@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Note;
-use App\Http\Resources\NoteResource; // Importa la tua NoteResource
+use App\Http\Resources\NoteResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -15,7 +15,7 @@ class NoteController extends Controller
      */
     public function index()
     {
-        $notes = Note::with('lista')->get(); // 'lista' è il nome della relazione nel Model Note
+        $notes = Note::with('lista')->get();
         return NoteResource::collection($notes);
     }
 
@@ -25,70 +25,79 @@ class NoteController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'note'    => 'required|string|max:100',
-            'status'  => 'boolean',
-            'list_id' => 'required|exists:lists,id',
+            'note'     => 'required|string|max:100',
+            'status'   => 'boolean',
+            'list_id'  => 'required|exists:lists,id',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $note = Note::create($request->all());
+        $note = Note::create([
+            'note'     => $request->note,
+            'status'   => $request->status ?? false,
+            'list_id'  => $request->list_id,
+        ]);
+
         return new NoteResource($note);
     }
 
     /**
-     * Mostra una singola nota con i dati della lista collegata.
+     * Mostra una singola nota con la lista collegata.
      */
-    public function show(Note $note) // Usa la Type Hinting
+    public function show(Note $note)
     {
-        $note->load('lista'); // Carica la relazione 'lista'
+        $note->load('lista');
         return new NoteResource($note);
     }
 
     /**
      * Aggiorna una nota esistente.
      */
-    public function update(Request $request, Note $note) // Usa la Type Hinting
+    public function update(Request $request, Note $note)
     {
         $validator = Validator::make($request->all(), [
-            'note'    => 'sometimes|required|string|max:100',
-            'status'  => 'sometimes|boolean',
-            'list_id' => 'sometimes|required|exists:lists,id',
+            'note'     => 'sometimes|required|string|max:100',
+            'status'   => 'sometimes|boolean',
+            'list_id'  => 'sometimes|required|exists:lists,id',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $note->update($request->all());
+        $note->update($request->only(['note', 'status', 'list_id']));
+
         return new NoteResource($note);
     }
 
     /**
-     * Fa check della nota.
+     * Check della nota.
      */
-    public function check(Note $note) // Usa la Type Hinting
+    public function check(Note $note)
     {
         $note->status = true;
         $note->save();
-        return new NoteResource($note); // Restituisci la risorsa aggiornata
+
+        return new NoteResource($note);
     }
+
     /**
      * Uncheck della nota.
      */
-    public function uncheck(Note $note) // Usa la Type Hinting
+    public function uncheck(Note $note)
     {
         $note->status = false;
         $note->save();
-        return new NoteResource($note); // Restituisci la risorsa aggiornata
+
+        return new NoteResource($note);
     }
 
     /**
      * Elimina una nota.
      */
-    public function destroy(Note $note) // Usa la Type Hinting
+    public function destroy(Note $note)
     {
         $note->delete();
         return response()->json(null, 204);
