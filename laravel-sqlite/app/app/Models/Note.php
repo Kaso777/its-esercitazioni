@@ -14,7 +14,6 @@ class Note extends Model
     // Una nota appartiene a una lista
     public function lista()
     {
-        // Laravel userà 'list_id' come chiave esterna, invece di dedurla da 'Lista' → 'lista_id'
-        return $this->belongsTo(Lista::class, 'list_id');
+        return $this->belongsTo(ListModel::class, 'list_id');
     }
 }

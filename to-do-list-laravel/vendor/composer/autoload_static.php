@@ -588,7 +588,13 @@ class ComposerStaticInitadb4b680144df947b976ddb89b6572b1
     );
 
     public static $classMap = array (
+        'App\\Http\\Controllers\\Api\\ListaController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/ListaController.php',
+        'App\\Http\\Controllers\\Api\\NoteController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/NoteController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
+        'App\\Http\\Resources\\ListaResource' => __DIR__ . '/../..' . '/app/Http/Resources/ListaResource.php',
+        'App\\Http\\Resources\\NoteResource' => __DIR__ . '/../..' . '/app/Http/Resources/NoteResource.php',
+        'App\\Models\\Lista' => __DIR__ . '/../..' . '/app/Models/Lista.php',
+        'App\\Models\\Note' => __DIR__ . '/../..' . '/app/Models/Note.php',
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',
         'App\\Providers\\AppServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AppServiceProvider.php',
         'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
