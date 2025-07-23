@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const API_BASE = "http://localhost/api";
+    const API_BASE = "http://127.0.0.1:8000/api";
 
+    // === Elementi DOM ===
     const listSelector = document.getElementById("listSelector");
     const newListForm = document.getElementById("newListForm");
     const newListName = document.getElementById("newListName");
@@ -17,6 +18,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const confirmEditList = document.getElementById("confirmEditList");
     const cancelEditList = document.getElementById("cancelEditList");
 
+    const deleteListPopup = document.getElementById("deleteListPopup");
+    const confirmDeleteList = document.getElementById("confirmDeleteList");
+    const cancelDeleteList = document.getElementById("cancelDeleteList");
+
     const confirmPopup = document.getElementById("confirmPopup");
     const confirmYes = document.getElementById("confirmYes");
     const confirmNo = document.getElementById("confirmNo");
@@ -26,11 +31,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const editConfirm = document.getElementById("editConfirm");
     const editCancel = document.getElementById("editCancel");
 
+    // === Variabili di stato ===
     let currentLists = [];
     let currentListId = null;
     let noteToDelete = null;
     let noteToEdit = null;
 
+    // === Headers comuni per fetch API ===
     function headers() {
         return {
             "Content-Type": "application/json",
@@ -38,6 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
         };
     }
 
+    // === Caricamento liste ===
     function fetchLists() {
         fetch(`${API_BASE}/lists`, { headers: headers() })
             .then(res => res.json())
@@ -48,7 +56,10 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
+    // === Render delle liste nel <select> ===
     function renderListSelector() {
+        const previousListId = currentListId;
+
         listSelector.innerHTML = "";
         currentLists.forEach(list => {
             const option = document.createElement("option");
@@ -57,9 +68,15 @@ document.addEventListener("DOMContentLoaded", function () {
             listSelector.appendChild(option);
         });
 
-        currentListId = listSelector.value;
+        if (previousListId && currentLists.find(l => l.id == previousListId)) {
+            listSelector.value = previousListId;
+            currentListId = previousListId;
+        } else {
+            currentListId = listSelector.value;
+        }
     }
 
+    // === Render note della lista selezionata ===
     function renderNoteList() {
         const selected = currentLists.find(l => l.id == currentListId);
         noteListDiv.innerHTML = "";
@@ -98,11 +115,13 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    // === Cambio lista selezionata ===
     listSelector.addEventListener("change", () => {
         currentListId = listSelector.value;
         renderNoteList();
     });
 
+    // === Aggiunta nuova lista ===
     newListForm.addEventListener("submit", (e) => {
         e.preventDefault();
         const name = newListName.value.trim();
@@ -118,6 +137,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+    // === Modifica lista ===
     editListBtn.addEventListener("click", () => {
         const selected = currentLists.find(l => l.id == currentListId);
         if (!selected) return;
@@ -143,17 +163,29 @@ document.addEventListener("DOMContentLoaded", function () {
         editListPopup.classList.remove("show");
     });
 
+    // === Eliminazione lista (conferma popup) ===
     deleteListBtn.addEventListener("click", () => {
+        if (!currentListId) return;
+        deleteListPopup.classList.add("show");
+    });
+
+    confirmDeleteList.addEventListener("click", () => {
         if (!currentListId) return;
 
         fetch(`${API_BASE}/lists/${currentListId}`, {
             method: "DELETE",
             headers: headers(),
         }).then(() => {
+            deleteListPopup.classList.remove("show");
             fetchLists();
         });
     });
 
+    cancelDeleteList.addEventListener("click", () => {
+        deleteListPopup.classList.remove("show");
+    });
+
+    // === Aggiunta nuova nota ===
     messageForm.addEventListener("submit", (e) => {
         e.preventDefault();
         const note = messageInput.value.trim();
@@ -172,6 +204,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+    // === Eliminazione note completate ===
     deleteCompleted.addEventListener("click", () => {
         const selected = currentLists.find(l => l.id == currentListId);
         if (!selected || !selected.notes) return;
@@ -188,6 +221,7 @@ document.addEventListener("DOMContentLoaded", function () {
         Promise.all(promises).then(fetchLists);
     });
 
+    // === Conferma eliminazione nota ===
     confirmYes.addEventListener("click", () => {
         if (!noteToDelete) return;
 
@@ -206,6 +240,7 @@ document.addEventListener("DOMContentLoaded", function () {
         noteToDelete = null;
     });
 
+    // === Modifica nota ===
     editConfirm.addEventListener("click", () => {
         if (!noteToEdit) return;
 
@@ -228,11 +263,11 @@ document.addEventListener("DOMContentLoaded", function () {
         noteToEdit = null;
     });
 
-    // Classe CSS "show" per visualizzare i modali
+    // Nascondi popup all'avvio
     document.querySelectorAll(".modal").forEach(modal => {
         modal.classList.remove("show");
     });
 
-    // Inizializza le liste all'avvio
+    // === Avvio iniziale ===
     fetchLists();
 });

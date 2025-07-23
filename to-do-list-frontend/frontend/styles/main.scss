@@ -4,19 +4,16 @@
 :root {
     --bg-main: #f9f6f1;
     --bg-section: #fffaf3;
-    --accent: #5c8a5f;
-    /* Verde bamboo */
+    --accent: #5c8a5f; // Verde bamboo
     --accent-light: #7fb685;
     --text-main: #2f2f2f;
     --text-muted: #555;
     --border: #e0dcd1;
     --shadow: rgba(0, 0, 0, 0.05);
-    --aura: rgba(87, 140, 80, 0.4);
-    /* Verde bamboo aura */
+    --aura: rgba(87, 140, 80, 0.4); // Verde bamboo aura
 }
 
 /* ===================== BASE ===================== */
-
 * {
     box-sizing: border-box;
     margin: 0;
@@ -46,7 +43,6 @@ h1 {
 }
 
 /* ===================== CONTENUTO ===================== */
-
 .main-content {
     max-width: 800px;
     margin: 0 auto;
@@ -62,7 +58,6 @@ section {
 }
 
 /* ===================== FORM ===================== */
-
 input[type="text"] {
     padding: 0.6rem 1rem;
     border: 1px solid var(--border);
@@ -73,7 +68,6 @@ input[type="text"] {
 }
 
 /* ===================== BOTTONI ===================== */
-
 button {
     background-color: var(--accent);
     color: white;
@@ -83,6 +77,15 @@ button {
     border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+
+    &:hover {
+        background-color: var(--accent-light);
+    }
+
+    &:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
 }
 
 /* Aura verde bamboo + animazione pulsante */
@@ -100,12 +103,7 @@ button {
     }
 }
 
-button:hover {
-    background-color: var(--accent-light);
-}
-
 /* ===================== SELEZIONE LISTA ===================== */
-
 .list-selector-group {
     display: flex;
     align-items: center;
@@ -120,38 +118,38 @@ select {
     font-size: 1rem;
 }
 
-/* Azioni lista (✏️ 🗑️) */
-.list-actions button {
-    background: none;
-    border: none;
-    font-size: 1.4rem;
-    cursor: pointer;
-    margin-left: 0.5rem;
-    color: var(--accent);
-}
+.list-actions {
+    button {
+        background: none;
+        border: none;
+        font-size: 1.4rem;
+        cursor: pointer;
+        margin-left: 0.5rem;
+        color: var(--accent);
 
-.list-actions button:hover {
-    animation: auraPulse 1.5s infinite;
+        &:hover {
+            animation: auraPulse 1.5s infinite;
+        }
+    }
 }
 
 /* ===================== NOTE ===================== */
-
 ul#noteListDiv {
     list-style: none;
     margin-top: 1rem;
-}
 
-ul#noteListDiv li {
-    background-color: #fff;
-    padding: 0.75rem 1rem;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    margin-bottom: 0.8rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: nowrap;
+    li {
+        background-color: #fff;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        margin-bottom: 0.8rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: nowrap;
+    }
 }
 
 .note-text {
@@ -164,19 +162,51 @@ ul#noteListDiv li {
     flex-shrink: 0;
     display: flex;
     gap: 0.5rem;
+
+    button {
+        font-size: 1.2rem;
+        border: none;
+        padding: 0.4rem 0.6rem;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .edit-btn {
+        background-color: #e3f5e5;
+        color: #4e8e58;
+
+        &:hover {
+            background-color: #5c8a5f;
+            color: white;
+            box-shadow: 0 0 8px 2px rgba(87, 140, 80, 0.4);
+        }
+    }
+
+    .delete-btn {
+        background-color: #fce2e2;
+        color: #a94442;
+
+        &:hover {
+            background-color: #c9302c;
+            color: white;
+            box-shadow: 0 0 8px 2px rgba(201, 48, 44, 0.4);
+        }
+    }
 }
 
-/* Pulsante elimina completati */
-.delete-completed-wrapper button {
-    background-color: var(--accent);
-}
+/* ===================== PULSANTE ELIMINA COMPLETATE ===================== */
+.delete-completed-wrapper {
+    button {
+        background-color: var(--accent);
 
-.delete-completed-wrapper button:hover {
-    animation: auraPulse 1.5s infinite;
+        &:hover {
+            animation: auraPulse 1.5s infinite;
+        }
+    }
 }
 
 /* ===================== MODALI ===================== */
-
 .modal {
     position: fixed;
     top: 0;
@@ -188,67 +218,31 @@ ul#noteListDiv li {
     justify-content: center;
     align-items: center;
     z-index: 1000;
-}
 
-.modal-content {
-    background-color: var(--bg-section);
-    padding: 2rem;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
+    &.show {
+        display: flex;
+    }
 
-.modal-content p,
-.modal-content h3 {
-    margin-bottom: 1rem;
-}
+    .modal-content {
+        background-color: var(--bg-section);
+        padding: 2rem;
+        border-radius: 10px;
+        width: 90%;
+        max-width: 400px;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 
-.modal-content input {
-    margin-bottom: 1rem;
-}
+        p,
+        h3 {
+            margin-bottom: 1rem;
+        }
 
-.modal-content button {
-    margin: 0.25rem;
-}
+        input {
+            margin-bottom: 1rem;
+        }
 
-/* ===================== UTILITY ===================== */
-
-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
-.note-actions button {
-    font-size: 1.2rem;
-    border: none;
-    padding: 0.4rem 0.6rem;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* Modifica - verde chiaro */
-.note-actions .edit-btn {
-    background-color: #e3f5e5;
-    color: #4e8e58;
-}
-
-.note-actions .edit-btn:hover {
-    background-color: #5c8a5f;
-    color: white;
-    box-shadow: 0 0 8px 2px rgba(87, 140, 80, 0.4);
-}
-
-/* Elimina - rosso chiaro */
-.note-actions .delete-btn {
-    background-color: #fce2e2;
-    color: #a94442;
-}
-
-.note-actions .delete-btn:hover {
-    background-color: #c9302c;
-    color: white;
-    box-shadow: 0 0 8px 2px rgba(201, 48, 44, 0.4);
+        button {
+            margin: 0.25rem;
+        }
+    }
 }
