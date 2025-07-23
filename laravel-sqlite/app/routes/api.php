@@ -5,24 +5,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ListController;  
 use App\Http\Controllers\Api\NoteController;  
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Qui puoi registrare le rotte API per la tua applicazione. Queste rotte
-| sono caricate dal RouteServiceProvider e tutte saranno assegnate al
-| gruppo di middleware "api".
-|
-*/
-
-// Questa è una rotta di default per ottenere l'utente autenticato (spesso presente in Laravel)
-//Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//    return $request->user();
-//});
-
-// --- ROTTE DELLA TUA TO-DO LIST ---
-
 // Rotte Resource per le liste
 // Questo creerà le rotte CRUD standard per la risorsa 'lists'
 Route::apiResource('lists', ListController::class);

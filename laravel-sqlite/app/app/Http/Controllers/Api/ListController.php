@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\ListModel;
-use App\Http\Resources\ListaResource;
+use App\Http\Resources\ListResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -41,7 +41,7 @@ class ListController extends Controller
         $lista = ListModel::create($request->all());
 
         // Restituisce la risorsa appena creata formattata
-        return new ListaResource($lista);
+        return new ListResource($lista);
     }
 
     /**
