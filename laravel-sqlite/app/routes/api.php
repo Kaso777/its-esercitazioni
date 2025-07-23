@@ -7,7 +7,10 @@ use App\Http\Controllers\Api\NoteController;
 
 // Rotte Resource per le liste
 // Questo creerà le rotte CRUD standard per la risorsa 'lists'
-Route::apiResource('lists', ListController::class);
+Route::apiResource('lists', ListController::class)->parameters([
+    'lists' => 'lista'
+]);
+
 
 // Rotte Resource per le note
 // Questo creerà le rotte CRUD standard per la risorsa 'notes'
