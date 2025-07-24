@@ -165,6 +165,9 @@ document.addEventListener("DOMContentLoaded", function () {
             headers: headers(),
         }).then(() => {
             fetchLists();
+            if (archivedSection.style.display === "block") {
+            fetchArchivedLists(); // aggiorna subito la sezione archiviate se visibile
+        }
         });
     });
 

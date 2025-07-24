@@ -133,6 +133,15 @@ select {
     }
 }
 
+#archivedLists li button {
+    font-size: 0.85rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    margin: 0.4rem;
+    background-color: orange;
+}
+
+
 /* ===================== NOTE ===================== */
 ul#noteListDiv {
     list-style: none;
