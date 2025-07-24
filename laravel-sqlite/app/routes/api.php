@@ -6,10 +6,19 @@ use App\Http\Controllers\Api\ListController;
 use App\Http\Controllers\Api\NoteController;  
 
 // Rotte Resource per le liste
+// Rotta per ottenere le liste archiviate
+Route::get('lists/archived', [ListController::class, 'archivedLists']);
 // Questo creerà le rotte CRUD standard per la risorsa 'lists'
 Route::apiResource('lists', ListController::class)->parameters([
     'lists' => 'lista'
 ]);
+// Rotte Custom per le liste (archiviazione)
+// È FONDAMENTALE che queste rotte siano definite DOPO la riga `Route::apiResource('lists', ListController::class);`
+// Altrimenti, Laravel potrebbe interpretare 'archive' come l'ID di una lista.
+Route::patch('lists/{lista}/archive', [ListController::class, 'archive']);
+Route::patch('lists/{lista}/unarchive', [ListController::class, 'unarchive']);
+
+
 
 
 // Rotte Resource per le note

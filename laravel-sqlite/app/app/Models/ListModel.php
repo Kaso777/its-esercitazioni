@@ -10,7 +10,8 @@ class ListModel extends Model
     // Specifica il nome corretto della tabella nel database
     protected $table = 'lists';
     
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'archived'];
+
 
     // Una lista ha molte note
     public function notes()

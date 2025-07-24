@@ -7,6 +7,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const newListName = document.getElementById("newListName");
     const editListBtn = document.getElementById("editListBtn");
     const deleteListBtn = document.getElementById("deleteListBtn");
+    const archiveListBtn = document.getElementById("archiveListBtn");
+    const showArchivedListsBtn = document.getElementById("showArchivedListsBtn");
 
     const messageForm = document.getElementById("messageForm");
     const messageInput = document.getElementById("message");
@@ -30,6 +32,15 @@ document.addEventListener("DOMContentLoaded", function () {
     const editInput = document.getElementById("editInput");
     const editConfirm = document.getElementById("editConfirm");
     const editCancel = document.getElementById("editCancel");
+
+    // Sezione per liste archiviate
+    const archivedSection = document.createElement("section");
+    archivedSection.id = "archived-section";
+    archivedSection.innerHTML = `<h2>📦 Liste archiviate</h2><ul id="archivedLists"></ul>`;
+    archivedSection.style.display = "none";
+    document.querySelector("main").appendChild(archivedSection);
+
+    const archivedListsUl = document.getElementById("archivedLists");
 
     // === Variabili di stato ===
     let currentLists = [];
@@ -56,19 +67,29 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
+    function fetchArchivedLists() {
+        fetch(`${API_BASE}/lists/archived`, { headers: headers() })
+            .then(res => res.json())
+            .then(data => {
+                renderArchivedLists(data.data);
+            });
+    }
+
     // === Render delle liste nel <select> ===
     function renderListSelector() {
         const previousListId = currentListId;
 
         listSelector.innerHTML = "";
         currentLists.forEach(list => {
-            const option = document.createElement("option");
-            option.value = list.id;
-            option.textContent = list.name;
-            listSelector.appendChild(option);
+            if (!list.archived) {
+                const option = document.createElement("option");
+                option.value = list.id;
+                option.textContent = list.name;
+                listSelector.appendChild(option);
+            }
         });
 
-        if (previousListId && currentLists.find(l => l.id == previousListId)) {
+        if (previousListId && currentLists.find(l => l.id == previousListId && !l.archived)) {
             listSelector.value = previousListId;
             currentListId = previousListId;
         } else {
@@ -114,6 +135,47 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
     }
+
+    function renderArchivedLists(lists) {
+        archivedListsUl.innerHTML = "";
+        lists.forEach(list => {
+            const li = document.createElement("li");
+            li.textContent = list.name + " ";
+            const unarchiveBtn = document.createElement("button");
+            unarchiveBtn.textContent = "Ripristina";
+            unarchiveBtn.addEventListener("click", () => {
+                fetch(`${API_BASE}/lists/${list.id}/unarchive`, {
+                    method: "PATCH",
+                    headers: headers(),
+                }).then(() => {
+                    fetchLists();
+                    fetchArchivedLists();
+                });
+            });
+            li.appendChild(unarchiveBtn);
+            archivedListsUl.appendChild(li);
+        });
+    }
+
+    // === Archivio ===
+    archiveListBtn.addEventListener("click", () => {
+        if (!currentListId) return;
+        fetch(`${API_BASE}/lists/${currentListId}/archive`, {
+            method: "PATCH",
+            headers: headers(),
+        }).then(() => {
+            fetchLists();
+        });
+    });
+
+    showArchivedListsBtn.addEventListener("click", () => {
+        if (archivedSection.style.display === "none") {
+            archivedSection.style.display = "block";
+            fetchArchivedLists();
+        } else {
+            archivedSection.style.display = "none";
+        }
+    });
 
     // === Cambio lista selezionata ===
     listSelector.addEventListener("change", () => {

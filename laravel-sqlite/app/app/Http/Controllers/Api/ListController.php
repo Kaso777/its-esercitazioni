@@ -89,4 +89,35 @@ class ListController extends Controller
         // Restituisce una risposta vuota con codice 204 (No Content)
         return response()->json(null, 204);
     }
+
+    /**
+     * Archivia una lista.
+     */
+    public function archive(ListModel $lista)
+{
+    $lista->archived = true;
+    $lista->save();
+
+    return response()->json(['message' => 'Lista archiviata con successo']);
+}
+
+    /**
+     * Disarchivia una lista.
+     */
+public function unarchive(ListModel $lista)
+{
+    $lista->archived = false;
+    $lista->save();
+
+    return response()->json(['message' => 'Lista disarchiviata con successo']);
+}
+
+    /**
+     * Restituisce le liste archiviate.
+     */
+    public function archivedLists()
+    {
+        $archivedLists = ListModel::where('archived', true)->with('notes')->get();
+        return ListResource::collection($archivedLists);
+    }
 }
