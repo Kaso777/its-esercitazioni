@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Sezione per liste archiviate
     const archivedSection = document.createElement("section");
     archivedSection.id = "archived-section";
-    archivedSection.innerHTML = `<h2>📦 Liste archiviate</h2><ul id="archivedLists"></ul>`;
+    archivedSection.innerHTML = `<h2>Liste archiviate</h2><ul id="archivedLists"></ul>`;
     archivedSection.style.display = "none";
     document.querySelector("main").appendChild(archivedSection);
 
@@ -142,7 +142,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const li = document.createElement("li");
             li.textContent = list.name + " ";
             const unarchiveBtn = document.createElement("button");
-            unarchiveBtn.textContent = "Ripristina";
+            unarchiveBtn.textContent = "📤";
             unarchiveBtn.addEventListener("click", () => {
                 fetch(`${API_BASE}/lists/${list.id}/unarchive`, {
                     method: "PATCH",
