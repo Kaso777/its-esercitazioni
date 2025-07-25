@@ -42,6 +42,14 @@ h1 {
     margin-bottom: 2rem;
 }
 
+#archivedListsUl {
+  list-style: none;
+  padding: 0;
+  li+li{
+    margin-top: 10px;;
+  }
+}
+
 /* ===================== CONTENUTO ===================== */
 .main-content {
     max-width: 800px;
@@ -55,6 +63,33 @@ h1 {
 
 section {
     margin-bottom: 2.5rem;
+}
+
+#newTagForm {
+    input[type="text"] {
+        width:50%;
+        border-radius: 999px;
+    }
+    button{
+        border-radius: 999px;
+    }
+    
+}
+
+section,
+#tag-management {
+    border: 1px solid var(--border);
+    padding: 1rem;
+    border-radius: 8px;
+    background-color: #f8e17886;
+}
+
+section {
+    margin-bottom: 1.5rem;
+}
+
+#tag-management {
+    margin-bottom: 1.5rem;
 }
 
 /* ===================== FORM ===================== */
@@ -263,10 +298,6 @@ ul#noteListDiv {
     }
 }
 
-
-
-
-
 /* ===================== PULSANTE ELIMINA COMPLETATE ===================== */
 .delete-completed-wrapper {
     button {
@@ -317,6 +348,8 @@ ul#noteListDiv {
             margin: 0.25rem;
         }
     }
+
+
 
     
 

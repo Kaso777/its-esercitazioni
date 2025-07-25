@@ -75,10 +75,15 @@
 			<div class="modal-content">
 				<p>Modifica il nome della lista:</p>
 				<input type="text" id="editListInput" />
-				<button id="confirmEditList">Salva</button>
-				<button id="cancelEditList">Annulla</button>
+
+				<!-- Wrappiamo i due pulsanti in un contenitore -->
+				<div class="modal-buttons">
+					<button id="confirmEditList">Salva</button>
+					<button id="cancelEditList">Annulla</button>
+				</div>
 			</div>
 		</div>
+
 
 		<div id="confirmPopup" class="modal">
 			<div class="modal-content">
@@ -104,8 +109,10 @@
 		<div class="modal-content">
 			<h3>Modifica Tag</h3>
 			<input type="text" id="editTagInput" />
-			<button id="editTagConfirm">Salva</button>
-			<button id="editTagCancel">Annulla</button>
+			<div class="modal-buttons">
+				<button id="editTagConfirm">Salva</button>
+				<button id="editTagCancel">Annulla</button>
+			</div>
 		</div>
 	</div>
 
