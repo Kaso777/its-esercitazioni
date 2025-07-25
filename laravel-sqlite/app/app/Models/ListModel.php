@@ -18,4 +18,11 @@ class ListModel extends Model
     {
         return $this->hasMany(Note::class, 'list_id');
     }
+
+    // Una lista può avere molte etichette tramite una relazione many-to-many
+    public function tags()
+{
+    return $this->belongsToMany(Tag::class, 'list_tag', 'list_id', 'tag_id');
+}
+
 }

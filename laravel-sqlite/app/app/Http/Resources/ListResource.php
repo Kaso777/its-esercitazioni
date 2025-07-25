@@ -19,6 +19,7 @@ class ListResource extends JsonResource
             'name'      => $this->name,
             'archived'  => $this->archived,
             'notes'     => NoteResource::collection($this->whenLoaded('notes')),
+            'tags'      => TagResource::collection($this->whenLoaded('tags')),
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,
         ];

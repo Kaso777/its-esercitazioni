@@ -7,6 +7,7 @@ use App\Models\ListModel;
 use App\Http\Resources\ListResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Tag;
 
 class ListController extends Controller
 {
@@ -16,7 +17,7 @@ class ListController extends Controller
     public function index()
     {
         // Recupera tutte le liste e le loro note collegate (eager loading)
-        $lists = Listmodel::with('notes')->get();
+        $lists = ListModel::with(['notes', 'tags'])->get();;
 
         // Restituisce una collezione formattata tramite la Resource
         return ListResource::collection($lists);
@@ -50,7 +51,7 @@ class ListController extends Controller
     public function show(ListModel $lista)
     {
         // Carica le note collegate (lazy eager loading)
-        $lista->load('notes');
+        $lista->load(['notes', 'tags']);
 
         // Restituisce la lista come risorsa
         return new ListResource($lista);
@@ -94,30 +95,42 @@ class ListController extends Controller
      * Archivia una lista.
      */
     public function archive(ListModel $lista)
-{
-    $lista->archived = true;
-    $lista->save();
+    {
+        $lista->archived = true;
+        $lista->save();
 
-    return response()->json(['message' => 'Lista archiviata con successo']);
-}
+        return response()->json(['message' => 'Lista archiviata con successo']);
+    }
 
     /**
      * Disarchivia una lista.
      */
-public function unarchive(ListModel $lista)
-{
-    $lista->archived = false;
-    $lista->save();
+    public function unarchive(ListModel $lista)
+    {
+        $lista->archived = false;
+        $lista->save();
 
-    return response()->json(['message' => 'Lista disarchiviata con successo']);
-}
+        return response()->json(['message' => 'Lista disarchiviata con successo']);
+    }
 
     /**
      * Restituisce le liste archiviate.
      */
     public function archivedLists()
     {
-        $archivedLists = ListModel::where('archived', true)->with('notes')->get();
+        $archivedLists = ListModel::with(['notes', 'tags'])->where('archived', true)->get();
         return ListResource::collection($archivedLists);
+    }
+
+    public function attachTag(ListModel $lista, Tag $tag)
+    {
+        $lista->tags()->attach($tag->id);
+        return response()->json(['message' => 'Tag associato con successo']);
+    }
+
+    public function detachTag(ListModel $lista, Tag $tag)
+    {
+        $lista->tags()->detach($tag->id);
+        return response()->json(['message' => 'Tag rimosso con successo']);
     }
 }

@@ -1,338 +1,295 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const API_BASE = "http://127.0.0.1:8000/api";
+	const API_BASE = "http://127.0.0.1:8000/api";
 
-    // === Elementi DOM ===
-    const listSelector = document.getElementById("listSelector");
-    const newListForm = document.getElementById("newListForm");
-    const newListName = document.getElementById("newListName");
-    const editListBtn = document.getElementById("editListBtn");
-    const deleteListBtn = document.getElementById("deleteListBtn");
-    const archiveListBtn = document.getElementById("archiveListBtn");
-    const showArchivedListsBtn = document.getElementById("showArchivedListsBtn");
+	const listSelector = document.getElementById("listSelector");
+	const noteListDiv = document.getElementById("noteListDiv");
+	const messageInput = document.getElementById("message");
+	const messageForm = document.getElementById("messageForm");
+	const deleteCompletedBtn = document.getElementById("deleteCompleted");
 
-    const messageForm = document.getElementById("messageForm");
-    const messageInput = document.getElementById("message");
-    const noteListDiv = document.getElementById("noteListDiv");
-    const deleteCompleted = document.getElementById("deleteCompleted");
+	const newListForm = document.getElementById("newListForm");
+	const newListName = document.getElementById("newListName");
+	const editListBtn = document.getElementById("editListBtn");
+	const deleteListBtn = document.getElementById("deleteListBtn");
+	const archiveListBtn = document.getElementById("archiveListBtn");
+	const showArchivedListsBtn = document.getElementById("showArchivedListsBtn");
 
-    const editListPopup = document.getElementById("editListPopup");
-    const editListInput = document.getElementById("editListInput");
-    const confirmEditList = document.getElementById("confirmEditList");
-    const cancelEditList = document.getElementById("cancelEditList");
+	const deleteListPopup = document.getElementById("deleteListPopup");
+	const confirmDeleteList = document.getElementById("confirmDeleteList");
+	const cancelDeleteList = document.getElementById("cancelDeleteList");
 
-    const deleteListPopup = document.getElementById("deleteListPopup");
-    const confirmDeleteList = document.getElementById("confirmDeleteList");
-    const cancelDeleteList = document.getElementById("cancelDeleteList");
+	const editListPopup = document.getElementById("editListPopup");
+	const confirmEditList = document.getElementById("confirmEditList");
+	const cancelEditList = document.getElementById("cancelEditList");
+	const editListInput = document.getElementById("editListInput");
 
-    const confirmPopup = document.getElementById("confirmPopup");
-    const confirmYes = document.getElementById("confirmYes");
-    const confirmNo = document.getElementById("confirmNo");
+	const editPopup = document.getElementById("editPopup");
+	const editInput = document.getElementById("editInput");
+	const editConfirm = document.getElementById("editConfirm");
+	const editCancel = document.getElementById("editCancel");
 
-    const editPopup = document.getElementById("editPopup");
-    const editInput = document.getElementById("editInput");
-    const editConfirm = document.getElementById("editConfirm");
-    const editCancel = document.getElementById("editCancel");
+	const confirmPopup = document.getElementById("confirmPopup");
+	const confirmYes = document.getElementById("confirmYes");
+	const confirmNo = document.getElementById("confirmNo");
 
-    // Sezione per liste archiviate
-    const archivedSection = document.createElement("section");
-    archivedSection.id = "archived-section";
-    archivedSection.innerHTML = `<h2>Liste archiviate</h2><ul id="archivedLists"></ul>`;
-    archivedSection.style.display = "none";
-    document.querySelector("main").appendChild(archivedSection);
+	const tagList = document.getElementById("tagList");
+	const newTagForm = document.getElementById("newTagForm");
+	const newTagName = document.getElementById("newTagName");
 
-    const archivedListsUl = document.getElementById("archivedLists");
+	let currentListId = null;
+	let currentNotes = [];
+	let currentEditingNoteId = null;
+	let currentDeletingNoteId = null;
 
-    // === Variabili di stato ===
-    let currentLists = [];
-    let currentListId = null;
-    let noteToDelete = null;
-    let noteToEdit = null;
+	async function fetchLists() {
+		const res = await fetch(`${API_BASE}/lists`);
+		const data = await res.json();
+		populateListSelector(data.data);
+	}
 
-    // === Headers comuni per fetch API ===
-    function headers() {
-        return {
-            "Content-Type": "application/json",
-            "X-Requested-With": "XMLHttpRequest"
-        };
-    }
+	function populateListSelector(lists) {
+		listSelector.innerHTML = "";
+		lists.forEach((list) => {
+			if (!list.archived) {
+				const option = document.createElement("option");
+				option.value = list.id;
+				option.textContent = list.name;
+				listSelector.appendChild(option);
+			}
+		});
+		if (lists.length) {
+			currentListId = listSelector.value;
+			fetchNotes(currentListId);
+			fetchTags(currentListId);
+		} else {
+			currentListId = null;
+			noteListDiv.innerHTML = "";
+			tagList.innerHTML = "";
+		}
+	}
 
-    // === Caricamento liste ===
-    function fetchLists() {
-        fetch(`${API_BASE}/lists`, { headers: headers() })
-            .then(res => res.json())
-            .then(data => {
-                currentLists = data.data;
-                renderListSelector();
-                renderNoteList();
-            });
-    }
+	listSelector.addEventListener("change", () => {
+		currentListId = listSelector.value;
+		fetchNotes(currentListId);
+		fetchTags(currentListId);
+	});
 
-    function fetchArchivedLists() {
-        fetch(`${API_BASE}/lists/archived`, { headers: headers() })
-            .then(res => res.json())
-            .then(data => {
-                renderArchivedLists(data.data);
-            });
-    }
+	newListForm.addEventListener("submit", async (e) => {
+		e.preventDefault();
+		await fetch(`${API_BASE}/lists`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ name: newListName.value }),
+		});
+		newListName.value = "";
+		await fetchLists();
+	});
 
-    // === Render delle liste nel <select> ===
-    function renderListSelector() {
-        const previousListId = currentListId;
+	editListBtn.addEventListener("click", () => {
+		if (!currentListId) return;
+		editListPopup.style.display = "block";
+		editListInput.value = listSelector.selectedOptions[0].textContent;
+	});
 
-        listSelector.innerHTML = "";
-        currentLists.forEach(list => {
-            if (!list.archived) {
-                const option = document.createElement("option");
-                option.value = list.id;
-                option.textContent = list.name;
-                listSelector.appendChild(option);
-            }
-        });
+	confirmEditList.addEventListener("click", async () => {
+		const newName = editListInput.value.trim();
+		if (!newName) return;
+		await fetch(`${API_BASE}/lists/${currentListId}`, {
+			method: "PUT",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ name: newName }),
+		});
+		editListPopup.style.display = "none";
+		await fetchLists();
+	});
 
-        if (previousListId && currentLists.find(l => l.id == previousListId && !l.archived)) {
-            listSelector.value = previousListId;
-            currentListId = previousListId;
-        } else {
-            currentListId = listSelector.value;
-        }
-    }
+	cancelEditList.addEventListener("click", () => {
+		editListPopup.style.display = "none";
+	});
 
-    // === Render note della lista selezionata ===
-    function renderNoteList() {
-        const selected = currentLists.find(l => l.id == currentListId);
-        noteListDiv.innerHTML = "";
+	deleteListBtn.addEventListener("click", () => {
+		if (!currentListId) return;
+		deleteListPopup.style.display = "block";
+	});
 
-        if (!selected || !selected.notes) return;
+	confirmDeleteList.addEventListener("click", async () => {
+		await fetch(`${API_BASE}/lists/${currentListId}`, { method: "DELETE" });
+		deleteListPopup.style.display = "none";
+		await fetchLists();
+	});
 
-        selected.notes.forEach(note => {
-            const li = document.createElement("li");
-            li.innerHTML = `
-                <input type="checkbox" data-id="${note.id}" ${note.status ? "checked" : ""}>
-                <span class="${note.status ? "checked" : ""}">${note.noteText}</span>
-                <button data-id="${note.id}" class="edit-note">✏️</button>
-                <button data-id="${note.id}" class="delete-note">🗑️</button>
-            `;
-            noteListDiv.appendChild(li);
+	cancelDeleteList.addEventListener("click", () => {
+		deleteListPopup.style.display = "none";
+	});
 
-            const checkbox = li.querySelector("input[type='checkbox']");
-            checkbox.addEventListener("change", () => {
-                const action = checkbox.checked ? "check" : "uncheck";
-                fetch(`${API_BASE}/notes/${note.id}/${action}`, {
-                    method: "PATCH",
-                    headers: headers(),
-                }).then(fetchLists);
-            });
+	archiveListBtn.addEventListener("click", async () => {
+		if (!currentListId) return;
+		await fetch(`${API_BASE}/lists/${currentListId}/archive`, { method: "PATCH" });
+		await fetchLists();
+	});
 
-            li.querySelector(".edit-note").addEventListener("click", () => {
-                noteToEdit = note;
-                editInput.value = note.noteText;
-                editPopup.classList.add("show");
-            });
+	showArchivedListsBtn.addEventListener("click", async () => {
+		const res = await fetch(`${API_BASE}/lists/archived`);
+		const data = await res.json();
+		const archivedSection = document.getElementById("archivedListsSection");
+		if (!archivedSection) {
+			const section = document.createElement("section");
+			section.id = "archivedListsSection";
+			section.innerHTML = `<h3>Liste Archiviate</h3><ul id="archivedListsUl"></ul>`;
+			document.querySelector("main").appendChild(section);
+		}
+		const ul = document.getElementById("archivedListsUl");
+		ul.innerHTML = "";
+		data.data.forEach((list) => {
+			const li = document.createElement("li");
+			li.textContent = list.name;
+			const btn = document.createElement("button");
+			btn.textContent = "↩️";
+			btn.title = "Disarchivia";
+			btn.addEventListener("click", async () => {
+				await fetch(`${API_BASE}/lists/${list.id}/unarchive`, { method: "PATCH" });
+				await fetchLists();
+				await showArchivedListsBtn.click();
+			});
+			li.appendChild(btn);
+			ul.appendChild(li);
+		});
+	});
 
-            li.querySelector(".delete-note").addEventListener("click", () => {
-                noteToDelete = note;
-                confirmPopup.classList.add("show");
-            });
-        });
-    }
+	async function fetchNotes(listId) {
+		const res = await fetch(`${API_BASE}/lists/${listId}`);
+		const data = await res.json();
+		currentNotes = data.data.notes || [];
+		renderNotes();
+	}
 
-    function renderArchivedLists(lists) {
-        archivedListsUl.innerHTML = "";
-        lists.forEach(list => {
-            const li = document.createElement("li");
-            li.textContent = list.name + " ";
-            const unarchiveBtn = document.createElement("button");
-            unarchiveBtn.textContent = "📤";
-            unarchiveBtn.addEventListener("click", () => {
-                fetch(`${API_BASE}/lists/${list.id}/unarchive`, {
-                    method: "PATCH",
-                    headers: headers(),
-                }).then(() => {
-                    fetchLists();
-                    fetchArchivedLists();
-                });
-            });
-            li.appendChild(unarchiveBtn);
-            archivedListsUl.appendChild(li);
-        });
-    }
+	function renderNotes() {
+		noteListDiv.innerHTML = "";
+		currentNotes.forEach((note) => {
+			const li = document.createElement("li");
+			li.innerHTML = `
+				<input type="checkbox" ${note.status ? "checked" : ""} data-id="${note.id}">
+				<span>${note.note}</span>
+				<button data-edit="${note.id}">✏️</button>
+				<button data-delete="${note.id}">🗑️</button>
+			`;
+			noteListDiv.appendChild(li);
+		});
+	}
 
-    // === Archivio ===
-    archiveListBtn.addEventListener("click", () => {
-        if (!currentListId) return;
-        fetch(`${API_BASE}/lists/${currentListId}/archive`, {
-            method: "PATCH",
-            headers: headers(),
-        }).then(() => {
-            fetchLists();
-            if (archivedSection.style.display === "block") {
-            fetchArchivedLists(); // aggiorna subito la sezione archiviate se visibile
-        }
-        });
-    });
+	messageForm.addEventListener("submit", async (e) => {
+		e.preventDefault();
+		await fetch(`${API_BASE}/notes`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ note: messageInput.value, list_id: currentListId }),
+		});
+		messageInput.value = "";
+		await fetchNotes(currentListId);
+	});
 
-    showArchivedListsBtn.addEventListener("click", () => {
-        if (archivedSection.style.display === "none") {
-            archivedSection.style.display = "block";
-            fetchArchivedLists();
-        } else {
-            archivedSection.style.display = "none";
-        }
-    });
+	noteListDiv.addEventListener("click", async (e) => {
+		const id = e.target.dataset.edit || e.target.dataset.delete;
+		if (!id) return;
 
-    // === Cambio lista selezionata ===
-    listSelector.addEventListener("change", () => {
-        currentListId = listSelector.value;
-        renderNoteList();
-    });
+		if (e.target.dataset.edit) {
+			const note = currentNotes.find((n) => n.id == id);
+			currentEditingNoteId = id;
+			editInput.value = note.note;
+			editPopup.style.display = "block";
+		}
 
-    // === Aggiunta nuova lista ===
-    newListForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const name = newListName.value.trim();
-        if (!name) return;
+		if (e.target.dataset.delete) {
+			currentDeletingNoteId = id;
+			confirmPopup.style.display = "block";
+		}
+	});
 
-        fetch(`${API_BASE}/lists`, {
-            method: "POST",
-            headers: headers(),
-            body: JSON.stringify({ name }),
-        }).then(() => {
-            newListName.value = "";
-            fetchLists();
-        });
-    });
+	noteListDiv.addEventListener("change", async (e) => {
+		if (e.target.type === "checkbox") {
+			const id = e.target.dataset.id;
+			await fetch(`${API_BASE}/notes/${id}`, {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ status: e.target.checked ? 1 : 0 }),
+			});
+		}
+	});
 
-    // === Modifica lista ===
-    editListBtn.addEventListener("click", () => {
-        const selected = currentLists.find(l => l.id == currentListId);
-        if (!selected) return;
-        editListInput.value = selected.name;
-        editListPopup.classList.add("show");
-    });
+	editConfirm.addEventListener("click", async () => {
+		await fetch(`${API_BASE}/notes/${currentEditingNoteId}`, {
+			method: "PUT",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ note: editInput.value }),
+		});
+		editPopup.style.display = "none";
+		await fetchNotes(currentListId);
+	});
 
-    confirmEditList.addEventListener("click", () => {
-        const name = editListInput.value.trim();
-        if (!name) return;
+	editCancel.addEventListener("click", () => {
+		editPopup.style.display = "none";
+	});
 
-        fetch(`${API_BASE}/lists/${currentListId}`, {
-            method: "PUT",
-            headers: headers(),
-            body: JSON.stringify({ name }),
-        }).then(() => {
-            editListPopup.classList.remove("show");
-            fetchLists();
-        });
-    });
+	confirmYes.addEventListener("click", async () => {
+		await fetch(`${API_BASE}/notes/${currentDeletingNoteId}`, { method: "DELETE" });
+		confirmPopup.style.display = "none";
+		await fetchNotes(currentListId);
+	});
 
-    cancelEditList.addEventListener("click", () => {
-        editListPopup.classList.remove("show");
-    });
+	confirmNo.addEventListener("click", () => {
+		confirmPopup.style.display = "none";
+	});
 
-    // === Eliminazione lista (conferma popup) ===
-    deleteListBtn.addEventListener("click", () => {
-        if (!currentListId) return;
-        deleteListPopup.classList.add("show");
-    });
+	deleteCompletedBtn.addEventListener("click", async () => {
+		const completed = [...noteListDiv.querySelectorAll("input[type='checkbox']:checked")];
+		await Promise.all(
+			completed.map((box) => fetch(`${API_BASE}/notes/${box.dataset.id}`, { method: "DELETE" }))
+		);
+		await fetchNotes(currentListId);
+	});
 
-    confirmDeleteList.addEventListener("click", () => {
-        if (!currentListId) return;
+	async function fetchTags(listId) {
+		const res = await fetch(`${API_BASE}/lists/${listId}`);
+		const data = await res.json();
+		const listTags = data.data.tags || [];
 
-        fetch(`${API_BASE}/lists/${currentListId}`, {
-            method: "DELETE",
-            headers: headers(),
-        }).then(() => {
-            deleteListPopup.classList.remove("show");
-            fetchLists();
-        });
-    });
+		tagList.innerHTML = "";
+		listTags.forEach((tag) => {
+			const li = document.createElement("li");
+			const span = document.createElement("span");
+			span.textContent = tag.name;
 
-    cancelDeleteList.addEventListener("click", () => {
-        deleteListPopup.classList.remove("show");
-    });
+			const del = document.createElement("button");
+			del.textContent = "❌";
+			del.addEventListener("click", async () => {
+				await fetch(`${API_BASE}/lists/${listId}/tags/${tag.id}`, { method: "DELETE" });
+				await fetchTags(listId);
+			});
 
-    // === Aggiunta nuova nota ===
-    messageForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const note = messageInput.value.trim();
-        if (!note || !currentListId) return;
+			li.appendChild(span);
+			li.appendChild(del);
+			tagList.appendChild(li);
+		});
+	}
 
-        fetch(`${API_BASE}/notes`, {
-            method: "POST",
-            headers: headers(),
-            body: JSON.stringify({
-                note,
-                list_id: currentListId,
-            }),
-        }).then(() => {
-            messageInput.value = "";
-            fetchLists();
-        });
-    });
+	newTagForm.addEventListener("submit", async (e) => {
+		e.preventDefault();
+		if (!currentListId) return;
 
-    // === Eliminazione note completate ===
-    deleteCompleted.addEventListener("click", () => {
-        const selected = currentLists.find(l => l.id == currentListId);
-        if (!selected || !selected.notes) return;
+		const res = await fetch(`${API_BASE}/tags`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ name: newTagName.value }),
+		});
+		const createdTag = await res.json();
 
-        const promises = selected.notes
-            .filter(n => n.status)
-            .map(n =>
-                fetch(`${API_BASE}/notes/${n.id}`, {
-                    method: "DELETE",
-                    headers: headers(),
-                })
-            );
+		await fetch(`${API_BASE}/lists/${currentListId}/tags/${createdTag.data.id}`, {
+			method: "POST",
+		});
 
-        Promise.all(promises).then(fetchLists);
-    });
+		newTagName.value = "";
+		await fetchTags(currentListId);
+	});
 
-    // === Conferma eliminazione nota ===
-    confirmYes.addEventListener("click", () => {
-        if (!noteToDelete) return;
-
-        fetch(`${API_BASE}/notes/${noteToDelete.id}`, {
-            method: "DELETE",
-            headers: headers(),
-        }).then(() => {
-            confirmPopup.classList.remove("show");
-            noteToDelete = null;
-            fetchLists();
-        });
-    });
-
-    confirmNo.addEventListener("click", () => {
-        confirmPopup.classList.remove("show");
-        noteToDelete = null;
-    });
-
-    // === Modifica nota ===
-    editConfirm.addEventListener("click", () => {
-        if (!noteToEdit) return;
-
-        const note = editInput.value.trim();
-        if (!note) return;
-
-        fetch(`${API_BASE}/notes/${noteToEdit.id}`, {
-            method: "PUT",
-            headers: headers(),
-            body: JSON.stringify({ note }),
-        }).then(() => {
-            editPopup.classList.remove("show");
-            noteToEdit = null;
-            fetchLists();
-        });
-    });
-
-    editCancel.addEventListener("click", () => {
-        editPopup.classList.remove("show");
-        noteToEdit = null;
-    });
-
-    // Nascondi popup all'avvio
-    document.querySelectorAll(".modal").forEach(modal => {
-        modal.classList.remove("show");
-    });
-
-    // === Avvio iniziale ===
-    fetchLists();
+	fetchLists();
 });
