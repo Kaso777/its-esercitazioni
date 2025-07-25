@@ -151,7 +151,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			const li = document.createElement("li");
 			li.textContent = list.name;
 			const btn = document.createElement("button");
-			btn.textContent = "↩️";
+			btn.textContent = "📤";
 			btn.title = "Disarchivia";
 			btn.addEventListener("click", async () => {
 				await fetch(`${API_BASE}/lists/${list.id}/unarchive`, { method: "PATCH" });
