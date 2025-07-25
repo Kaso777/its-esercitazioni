@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
 	const API_BASE = "http://127.0.0.1:8000/api";
 
+	// === Elementi DOM ===
 	const listSelector = document.getElementById("listSelector");
 	const noteListDiv = document.getElementById("noteListDiv");
 	const messageInput = document.getElementById("message");
@@ -36,18 +37,21 @@ document.addEventListener("DOMContentLoaded", function () {
 	const newTagForm = document.getElementById("newTagForm");
 	const newTagName = document.getElementById("newTagName");
 
-	// 🆕 VARIABILI PER IL POPUP DI MODIFICA TAG
+	// 🆕 Variabili per il popup di modifica tag
 	const editTagPopup = document.getElementById("editTagPopup");
 	const editTagInput = document.getElementById("editTagInput");
 	const editTagConfirm = document.getElementById("editTagConfirm");
 	const editTagCancel = document.getElementById("editTagCancel");
 
+	// Stato applicazione
 	let currentListId = null;
 	let currentNotes = [];
 	let currentEditingNoteId = null;
 	let currentDeletingNoteId = null;
-	let currentEditingTagId = null; // 🆕
+	let currentEditingTagId = null;
+	let archivedVisible = false;  // se la sezione archiviate è visibile
 
+	// === Fetch e render liste ===
 	async function fetchLists() {
 		const res = await fetch(`${API_BASE}/lists`);
 		const data = await res.json();
@@ -81,6 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		fetchTags(currentListId);
 	});
 
+	// === Creazione lista ===
 	newListForm.addEventListener("submit", async (e) => {
 		e.preventDefault();
 		await fetch(`${API_BASE}/lists`, {
@@ -92,12 +97,12 @@ document.addEventListener("DOMContentLoaded", function () {
 		await fetchLists();
 	});
 
+	// === Modifica lista ===
 	editListBtn.addEventListener("click", () => {
 		if (!currentListId) return;
 		editListPopup.classList.add("show");
 		editListInput.value = listSelector.selectedOptions[0].textContent;
 	});
-
 	confirmEditList.addEventListener("click", async () => {
 		const newName = editListInput.value.trim();
 		if (!newName) return;
@@ -109,43 +114,56 @@ document.addEventListener("DOMContentLoaded", function () {
 		editListPopup.classList.remove("show");
 		await fetchLists();
 	});
-
 	cancelEditList.addEventListener("click", () => {
 		editListPopup.classList.remove("show");
 	});
 
+	// === Elimina lista ===
 	deleteListBtn.addEventListener("click", () => {
 		if (!currentListId) return;
 		deleteListPopup.classList.add("show");
 	});
-
 	confirmDeleteList.addEventListener("click", async () => {
 		await fetch(`${API_BASE}/lists/${currentListId}`, { method: "DELETE" });
 		deleteListPopup.classList.remove("show");
 		await fetchLists();
 	});
-
 	cancelDeleteList.addEventListener("click", () => {
 		deleteListPopup.classList.remove("show");
 	});
 
+	// === Archivia lista ===
 	archiveListBtn.addEventListener("click", async () => {
 		if (!currentListId) return;
 		await fetch(`${API_BASE}/lists/${currentListId}/archive`, { method: "PATCH" });
 		await fetchLists();
+		if (archivedVisible) await updateArchivedSection();
 	});
 
+	// === Toggle + render archiviate ===
 	showArchivedListsBtn.addEventListener("click", async () => {
+		archivedVisible = !archivedVisible;
+		let section = document.getElementById("archivedListsSection");
+		if (archivedVisible) {
+			if (!section) {
+				section = document.createElement("section");
+				section.id = "archivedListsSection";
+				section.innerHTML = `<h3>Liste Archiviate</h3><ul id="archivedListsUl"></ul>`;
+				document.querySelector("main").appendChild(section);
+			}
+			section.style.display = "block";
+			await updateArchivedSection();
+		} else if (section) {
+			section.style.display = "none";
+		}
+	});
+
+	// === Funzione di aggiornamento live archiviate ===
+	async function updateArchivedSection() {
 		const res = await fetch(`${API_BASE}/lists/archived`);
 		const data = await res.json();
-		const archivedSection = document.getElementById("archivedListsSection");
-		if (!archivedSection) {
-			const section = document.createElement("section");
-			section.id = "archivedListsSection";
-			section.innerHTML = `<h3>Liste Archiviate</h3><ul id="archivedListsUl"></ul>`;
-			document.querySelector("main").appendChild(section);
-		}
 		const ul = document.getElementById("archivedListsUl");
+		if (!ul) return;
 		ul.innerHTML = "";
 		data.data.forEach((list) => {
 			const li = document.createElement("li");
@@ -153,16 +171,18 @@ document.addEventListener("DOMContentLoaded", function () {
 			const btn = document.createElement("button");
 			btn.textContent = "📤";
 			btn.title = "Disarchivia";
+			btn.classList.add("disarchive-btn");
 			btn.addEventListener("click", async () => {
 				await fetch(`${API_BASE}/lists/${list.id}/unarchive`, { method: "PATCH" });
 				await fetchLists();
-				await showArchivedListsBtn.click();
+				if (archivedVisible) await updateArchivedSection();
 			});
 			li.appendChild(btn);
 			ul.appendChild(li);
 		});
-	});
+	}
 
+	// === Fetch/render note ===
 	async function fetchNotes(listId) {
 		const res = await fetch(`${API_BASE}/lists/${listId}`);
 		const data = await res.json();
@@ -184,6 +204,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		});
 	}
 
+	// === Aggiunta nota ===
 	messageForm.addEventListener("submit", async (e) => {
 		e.preventDefault();
 		await fetch(`${API_BASE}/notes`, {
@@ -195,23 +216,21 @@ document.addEventListener("DOMContentLoaded", function () {
 		await fetchNotes(currentListId);
 	});
 
+	// === Edit/delete nota ===
 	noteListDiv.addEventListener("click", async (e) => {
 		const id = e.target.dataset.edit || e.target.dataset.delete;
 		if (!id) return;
-
 		if (e.target.dataset.edit) {
 			const note = currentNotes.find((n) => n.id == id);
 			currentEditingNoteId = id;
 			editInput.value = note.note;
 			editPopup.classList.add("show");
 		}
-
 		if (e.target.dataset.delete) {
 			currentDeletingNoteId = id;
 			confirmPopup.classList.add("show");
 		}
 	});
-
 	noteListDiv.addEventListener("change", async (e) => {
 		if (e.target.type === "checkbox") {
 			const id = e.target.dataset.id;
@@ -222,7 +241,6 @@ document.addEventListener("DOMContentLoaded", function () {
 			});
 		}
 	});
-
 	editConfirm.addEventListener("click", async () => {
 		await fetch(`${API_BASE}/notes/${currentEditingNoteId}`, {
 			method: "PUT",
@@ -232,21 +250,19 @@ document.addEventListener("DOMContentLoaded", function () {
 		editPopup.classList.remove("show");
 		await fetchNotes(currentListId);
 	});
-
 	editCancel.addEventListener("click", () => {
 		editPopup.classList.remove("show");
 	});
-
 	confirmYes.addEventListener("click", async () => {
 		await fetch(`${API_BASE}/notes/${currentDeletingNoteId}`, { method: "DELETE" });
 		confirmPopup.classList.remove("show");
 		await fetchNotes(currentListId);
 	});
-
 	confirmNo.addEventListener("click", () => {
 		confirmPopup.classList.remove("show");
 	});
 
+	// === Cancella completate ===
 	deleteCompletedBtn.addEventListener("click", async () => {
 		const completed = [...noteListDiv.querySelectorAll("input[type='checkbox']:checked")];
 		await Promise.all(
@@ -255,11 +271,11 @@ document.addEventListener("DOMContentLoaded", function () {
 		await fetchNotes(currentListId);
 	});
 
+	// === Fetch/render tag ===
 	async function fetchTags(listId) {
 		const res = await fetch(`${API_BASE}/lists/${listId}`);
 		const data = await res.json();
 		const listTags = data.data.tags || [];
-
 		tagList.innerHTML = "";
 		listTags.forEach((tag) => {
 			const li = document.createElement("li");
@@ -288,6 +304,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		});
 	}
 
+	// === Modifica tag ===
 	editTagConfirm.addEventListener("click", async () => {
 		const newName = editTagInput.value.trim();
 		if (newName && currentEditingTagId) {
@@ -301,30 +318,26 @@ document.addEventListener("DOMContentLoaded", function () {
 			await fetchTags(currentListId);
 		}
 	});
-
 	editTagCancel.addEventListener("click", () => {
 		editTagPopup.classList.remove("show");
 		currentEditingTagId = null;
 	});
 
+	// === Nuovo tag ===
 	newTagForm.addEventListener("submit", async (e) => {
 		e.preventDefault();
 		if (!currentListId) return;
-
 		const res = await fetch(`${API_BASE}/tags`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ name: newTagName.value }),
 		});
 		const createdTag = await res.json();
-
-		await fetch(`${API_BASE}/lists/${currentListId}/tags/${createdTag.data.id}`, {
-			method: "POST",
-		});
-
+		await fetch(`${API_BASE}/lists/${currentListId}/tags/${createdTag.data.id}`, { method: "POST" });
 		newTagName.value = "";
 		await fetchTags(currentListId);
 	});
 
+	// === Avvio iniziale ===
 	fetchLists();
 });

@@ -88,6 +88,27 @@ button {
     }
 }
 
+
+button.disarchive-btn {
+    font-size: 0.85rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    margin-left: 0.5rem;
+    background-color: orange;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+        background-color: darkorange;
+    }
+}
+
+
+
+
+
 /* Aura verde bamboo + animazione pulsante */
 @keyframes auraPulse {
     0% {
@@ -111,6 +132,8 @@ button {
     margin-bottom: 1rem;
 }
 
+
+
 select {
     padding: 0.6rem;
     border-radius: 6px;
@@ -131,14 +154,6 @@ select {
             animation: auraPulse 1.5s infinite;
         }
     }
-}
-
-#archivedLists li button {
-    font-size: 0.85rem;
-    padding: 0.3rem 0.6rem;
-    border-radius: 4px;
-    margin: 0.4rem;
-    background-color: orange;
 }
 
 
@@ -247,6 +262,8 @@ ul#noteListDiv {
         }
     }
 }
+
+
 
 
 
