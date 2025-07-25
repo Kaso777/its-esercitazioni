@@ -36,10 +36,17 @@ document.addEventListener("DOMContentLoaded", function () {
 	const newTagForm = document.getElementById("newTagForm");
 	const newTagName = document.getElementById("newTagName");
 
+	// 🆕 VARIABILI PER IL POPUP DI MODIFICA TAG
+	const editTagPopup = document.getElementById("editTagPopup");
+	const editTagInput = document.getElementById("editTagInput");
+	const editTagConfirm = document.getElementById("editTagConfirm");
+	const editTagCancel = document.getElementById("editTagCancel");
+
 	let currentListId = null;
 	let currentNotes = [];
 	let currentEditingNoteId = null;
 	let currentDeletingNoteId = null;
+	let currentEditingTagId = null; // 🆕
 
 	async function fetchLists() {
 		const res = await fetch(`${API_BASE}/lists`);
@@ -87,7 +94,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	editListBtn.addEventListener("click", () => {
 		if (!currentListId) return;
-		editListPopup.style.display = "block";
+		editListPopup.classList.add("show");
 		editListInput.value = listSelector.selectedOptions[0].textContent;
 	});
 
@@ -99,27 +106,27 @@ document.addEventListener("DOMContentLoaded", function () {
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ name: newName }),
 		});
-		editListPopup.style.display = "none";
+		editListPopup.classList.remove("show");
 		await fetchLists();
 	});
 
 	cancelEditList.addEventListener("click", () => {
-		editListPopup.style.display = "none";
+		editListPopup.classList.remove("show");
 	});
 
 	deleteListBtn.addEventListener("click", () => {
 		if (!currentListId) return;
-		deleteListPopup.style.display = "block";
+		deleteListPopup.classList.add("show");
 	});
 
 	confirmDeleteList.addEventListener("click", async () => {
 		await fetch(`${API_BASE}/lists/${currentListId}`, { method: "DELETE" });
-		deleteListPopup.style.display = "none";
+		deleteListPopup.classList.remove("show");
 		await fetchLists();
 	});
 
 	cancelDeleteList.addEventListener("click", () => {
-		deleteListPopup.style.display = "none";
+		deleteListPopup.classList.remove("show");
 	});
 
 	archiveListBtn.addEventListener("click", async () => {
@@ -196,12 +203,12 @@ document.addEventListener("DOMContentLoaded", function () {
 			const note = currentNotes.find((n) => n.id == id);
 			currentEditingNoteId = id;
 			editInput.value = note.note;
-			editPopup.style.display = "block";
+			editPopup.classList.add("show");
 		}
 
 		if (e.target.dataset.delete) {
 			currentDeletingNoteId = id;
-			confirmPopup.style.display = "block";
+			confirmPopup.classList.add("show");
 		}
 	});
 
@@ -222,22 +229,22 @@ document.addEventListener("DOMContentLoaded", function () {
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ note: editInput.value }),
 		});
-		editPopup.style.display = "none";
+		editPopup.classList.remove("show");
 		await fetchNotes(currentListId);
 	});
 
 	editCancel.addEventListener("click", () => {
-		editPopup.style.display = "none";
+		editPopup.classList.remove("show");
 	});
 
 	confirmYes.addEventListener("click", async () => {
 		await fetch(`${API_BASE}/notes/${currentDeletingNoteId}`, { method: "DELETE" });
-		confirmPopup.style.display = "none";
+		confirmPopup.classList.remove("show");
 		await fetchNotes(currentListId);
 	});
 
 	confirmNo.addEventListener("click", () => {
-		confirmPopup.style.display = "none";
+		confirmPopup.classList.remove("show");
 	});
 
 	deleteCompletedBtn.addEventListener("click", async () => {
@@ -266,11 +273,39 @@ document.addEventListener("DOMContentLoaded", function () {
 				await fetchTags(listId);
 			});
 
+			const edit = document.createElement("button");
+			edit.textContent = "✏️";
+			edit.addEventListener("click", () => {
+				currentEditingTagId = tag.id;
+				editTagInput.value = tag.name;
+				editTagPopup.classList.add("show");
+			});
+
 			li.appendChild(span);
+			li.appendChild(edit);
 			li.appendChild(del);
 			tagList.appendChild(li);
 		});
 	}
+
+	editTagConfirm.addEventListener("click", async () => {
+		const newName = editTagInput.value.trim();
+		if (newName && currentEditingTagId) {
+			await fetch(`${API_BASE}/tags/${currentEditingTagId}`, {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ name: newName }),
+			});
+			editTagPopup.classList.remove("show");
+			currentEditingTagId = null;
+			await fetchTags(currentListId);
+		}
+	});
+
+	editTagCancel.addEventListener("click", () => {
+		editTagPopup.classList.remove("show");
+		currentEditingTagId = null;
+	});
 
 	newTagForm.addEventListener("submit", async (e) => {
 		e.preventDefault();

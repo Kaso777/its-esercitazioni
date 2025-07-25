@@ -45,22 +45,19 @@ class TagController extends Controller
     /**
      * Aggiorna un tag esistente.
      */
-    public function update(Request $request, Tag $tag)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:50|unique:tags,name,' . $tag->id,
-        ]);
+    public function update(Request $request, $id)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
+    $tag = Tag::findOrFail($id);
+    $tag->name = $request->name;
+    $tag->save();
 
-        $tag->update([
-            'name' => $request->name,
-        ]);
+    return response()->json($tag);
+}
 
-        return response()->json($tag);
-    }
 
     /**
      * Elimina un tag.

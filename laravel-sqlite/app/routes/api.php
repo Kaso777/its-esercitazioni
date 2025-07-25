@@ -26,6 +26,7 @@ Route::delete('lists/{lista}/tags/{tag}', [ListController::class, 'detachTag']);
 Route::patch('lists/{lista}/archive', [ListController::class, 'archive']);
 Route::patch('lists/{lista}/unarchive', [ListController::class, 'unarchive']);
 
+Route::put('/tags/{id}', [TagController::class, 'update']);
 
 
 
